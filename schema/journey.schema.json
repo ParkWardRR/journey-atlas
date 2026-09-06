@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ParkWardRR/journey-atlas/schema/journey.schema.json",
+  "title": "Journey Atlas trip",
+  "description": "One road trip: everything needed to render a keepsake map. All coordinates are [latitude, longitude] in decimal degrees.",
+  "type": "object",
+  "required": ["title", "totalMiles", "drives", "stays", "pois", "roadStats"],
+  "additionalProperties": true,
+  "$defs": {
+    "latlon": {
+      "type": "array",
+      "description": "[latitude, longitude] in decimal degrees",
+      "minItems": 2, "maxItems": 2,
+      "items": { "type": "number" }
+    },
+    "roadClass": {
+      "type": "string",
+      "description": "Road size — controls the drawn line width & legend colour",
+      "enum": ["motorway", "a", "b", "minor"]
+    }
+  },
+  "properties": {
+    "$schema": { "type": "string" },
+    "title": { "type": "string", "description": "Headline, e.g. \"Adriatic Crossing\"" },
+    "subtitle": { "type": "string", "description": "One line under the title" },
+    "totalMiles": { "type": "number", "description": "Number shown in the distance legend" },
+
+    "drives": {
+      "type": "array",
+      "description": "Driving legs. Each seg is a polyline of coordinates; break a leg into segs wherever the road class changes.",
+      "items": {
+        "type": "object",
+        "required": ["segs"],
+        "properties": {
+          "label": { "type": "string" },
+          "segs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["cls", "line"],
+              "properties": {
+                "cls": { "$ref": "#/$defs/roadClass" },
+                "line": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/latlon" } }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "ferries": {
+      "type": "array",
+      "description": "Sea/lake crossings, drawn dashed and listed in a numbered table",
+      "items": {
+        "type": "object",
+        "required": ["num", "short", "a", "b"],
+        "properties": {
+          "num": { "type": "integer", "description": "Order/label number" },
+          "short": { "type": "string", "description": "e.g. \"Bari → Durrës\"" },
+          "vessel": { "type": "string" },
+          "size": { "type": "string", "description": "e.g. \"180 m · 900 pax\"" },
+          "dur": { "type": "string", "description": "e.g. \"8h 00m\"" },
+          "a": { "$ref": "#/$defs/latlon" },
+          "b": { "$ref": "#/$defs/latlon" }
+        }
+      }
+    },
+
+    "stays": {
+      "type": "array",
+      "description": "Overnight bases, numbered in trip order (green pin + hotel badge)",
+      "items": {
+        "type": "object",
+        "required": ["area", "lat", "lon"],
+        "properties": {
+          "area": { "type": "string", "description": "Town/label on the pin" },
+          "hotel": { "type": "string", "description": "Shown in blow-up captions" },
+          "lat": { "type": "number" },
+          "lon": { "type": "number" },
+          "dates": { "type": "string" }
+        }
+      }
+    },
+
+    "pois": {
+      "type": "array",
+      "description": "Sights/points of interest — orange dots, auto-labelled where they fit",
+      "items": {
+        "type": "object",
+        "required": ["name", "lat", "lon"],
+        "properties": {
+          "name": { "type": "string" },
+          "lat": { "type": "number" },
+          "lon": { "type": "number" }
+        }
+      }
+    },
+
+    "roadStats": {
+      "type": "array",
+      "description": "Distance legend rows, one per road class you used",
+      "items": {
+        "type": "object",
+        "required": ["cls", "label", "mi"],
+        "properties": {
+          "cls": { "$ref": "#/$defs/roadClass" },
+          "label": { "type": "string" },
+          "mi": { "type": "number" }
+        }
+      }
+    },
+
+    "weather": {
+      "type": "array",
+      "description": "Daily weather rows (generate with scripts/fetch-weather.mjs)",
+      "items": {
+        "type": "object",
+        "required": ["d", "where", "t"],
+        "properties": {
+          "d": { "type": "string", "description": "Day-of-month" },
+          "icon": { "type": "string", "description": "Weather emoji" },
+          "where": { "type": "string" },
+          "t": { "type": "string", "description": "e.g. \"17–28°C · 63–82°F\"" }
+        }
+      }
+    },
+    "weatherMonth": { "type": "string", "description": "e.g. \"June 2027\"" },
+
+    "insets": {
+      "type": "array",
+      "description": "Magnified blow-up circles for fiddly detail. cx/cy/r are PIXELS on the 1600×1200 canvas.",
+      "items": {
+        "type": "object",
+        "required": ["title", "center", "zoom", "cx", "cy", "r"],
+        "properties": {
+          "title": { "type": "string" },
+          "center": { "$ref": "#/$defs/latlon" },
+          "zoom": { "type": "number", "description": "Leaflet zoom for the blow-up (bigger = closer)" },
+          "cx": { "type": "number", "description": "Circle centre X in px (0–1600)" },
+          "cy": { "type": "number", "description": "Circle centre Y in px (0–1200)" },
+          "r": { "type": "number", "description": "Circle radius in px" },
+          "poiKm": { "type": "number", "description": "POIs within this many km of center get a numbered key" },
+          "capMode": { "type": "string", "enum": ["vert"], "description": "Tuck the caption vertically beside the bubble" }
+        }
+      }
+    },
+
+    "note": {
+      "type": "object",
+      "description": "Optional hand-note callout with a leader line",
+      "required": ["anchor", "tip", "title"],
+      "properties": {
+        "anchor": { "$ref": "#/$defs/latlon", "description": "Where the note box sits" },
+        "tip": { "$ref": "#/$defs/latlon", "description": "Where the leader points" },
+        "title": { "type": "string" },
+        "sub": { "type": "string" }
+      }
+    },
+
+    "finale": {
+      "type": "object",
+      "description": "Optional \"onward journey\" tag that arcs off the bottom edge",
+      "required": ["from", "label"],
+      "properties": {
+        "from": { "$ref": "#/$defs/latlon" },
+        "dx": { "type": "number", "description": "Horizontal reach of the arc in px (default 180)" },
+        "label": { "type": "string", "description": "e.g. \"Sofia · onward → Istanbul ✈\"" }
+      }
+    }
+  }
+}

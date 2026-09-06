@@ -18,12 +18,15 @@
     stamen: 'Stamen Terrain · Stadia Maps', outdoors: 'Stadia Outdoors', smooth: 'Alidade Smooth · Stadia Maps'
   };
 
+  const STADIA_FALLBACK = { watercolor: 'opentopo', stamen: 'opentopo', outdoors: 'opentopo', smooth: 'gray' };
   let pal = PALETTES.cobalt;
   let mapCredit = 'Esri World Topo';
   onMount(() => {
     const p = new URLSearchParams(location.search);
     pal = PALETTES[p.get('roads')] || PALETTES.cobalt;
-    mapCredit = MAP_CREDIT[p.get('style')] || 'Esri World Topo';
+    let style = p.get('style') || 'topo';
+    if (STADIA_FALLBACK[style] && !import.meta.env.VITE_STADIA_API_KEY) style = STADIA_FALLBACK[style];
+    mapCredit = MAP_CREDIT[style] || 'Esri World Topo';
   });
 </script>
 

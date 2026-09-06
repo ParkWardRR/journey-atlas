@@ -1,0 +1,106 @@
+# A trip, in the order you'd tell it. Edit this, then run:
+#     node scripts/build-trip.mjs trips/adriatic-crossing.yaml
+# ...which validates it and writes src/lib/journey.json (what the map renders).
+#
+# Coordinates are always [latitude, longitude] in decimal degrees.
+
+title:    Adriatic Crossing
+subtitle: Italy → Albania → Sofia · a fictional example route
+totalMiles: 415
+weatherMonth: June 2027
+
+# --- where you slept, in trip order (numbered green pins) --------------------
+stays:
+  - { area: Bari,   hotel: Ostello Levante, lat: 41.126, lon: 16.866, dates: Jun 3 }
+  - { area: Durrës, hotel: Hotel Adriatik,  lat: 41.309, lon: 19.446, dates: Jun 4 }
+  - { area: Tirana, hotel: Rogner Tirana,   lat: 41.324, lon: 19.820, dates: Jun 5–6 }
+  - { area: Ohrid,  hotel: Villa Sofija,    lat: 41.114, lon: 20.802, dates: Jun 7 }
+  - { area: Skopje, hotel: Hotel Solun,     lat: 41.994, lon: 21.430, dates: Jun 8 }
+  - { area: Sofia,  hotel: Sense Hotel,     lat: 42.696, lon: 23.320, dates: Jun 9–10 }
+
+# --- sights (orange dots, auto-labelled) ------------------------------------
+pois:
+  - { name: Polignano a Mare, lat: 40.996, lon: 17.220 }
+  - { name: Krujë Castle,     lat: 41.509, lon: 19.793 }
+  - { name: Ohrid Old Town,   lat: 41.116, lon: 20.788 }
+  - { name: Bay of the Bones, lat: 41.030, lon: 20.783 }
+  - { name: Sv. Naum,         lat: 40.914, lon: 20.742 }
+  - { name: Matka Canyon,     lat: 41.958, lon: 21.300 }
+  - { name: Rila Monastery,   lat: 42.133, lon: 23.340 }
+
+# --- what you sailed (dashed sea-legs + numbered table) ---------------------
+ferries:
+  - num: 1
+    short: Bari → Durrës
+    vessel: MV Adriatico
+    size: 180 m · 900 pax
+    dur: 8h 00m
+    a: [41.135, 16.855]
+    b: [41.310, 19.450]
+  - num: 2
+    short: Ohrid → Sv. Naum
+    vessel: Ohrid Star
+    size: 24 m · 80 pax
+    dur: 1h 15m
+    a: [41.113, 20.800]
+    b: [40.914, 20.742]
+
+# --- what you drove. One `line` per stretch; split where the road class
+#     changes (motorway | a | b | minor). Points are [lat, lon]. -------------
+drives:
+  - label: Puglia coast to the port
+    segs:
+      - cls: minor
+        line: [[40.996, 17.220], [41.055, 17.050], [41.117, 16.905], [41.140, 16.872]]
+  - label: Durrës → Sofia
+    segs:
+      - cls: motorway
+        line: [[41.323, 19.454], [41.324, 19.560], [41.320, 19.690], [41.327, 19.819]]
+      - cls: a
+        line: [[41.327, 19.819], [41.250, 19.900], [41.165, 20.010], [41.112, 20.082]]
+      - cls: a
+        line: [[41.112, 20.082], [41.020, 20.250], [40.930, 20.500], [40.902, 20.653], [40.980, 20.700], [41.050, 20.760], [41.117, 20.801]]
+      - cls: motorway
+        line: [[41.117, 20.801], [41.300, 20.900], [41.550, 21.100], [41.780, 21.300], [41.998, 21.428]]
+      - cls: motorway
+        line: [[41.998, 21.428], [42.100, 21.800], [42.180, 22.250], [42.240, 22.520], [42.350, 22.850], [42.500, 23.050], [42.620, 23.230], [42.698, 23.322]]
+
+# --- distance legend rows ---------------------------------------------------
+roadStats:
+  - { cls: motorway, label: Motorway,             mi: 250 }
+  - { cls: a,        label: A-road,               mi: 110 }
+  - { cls: b,        label: B-road,               mi: 35 }
+  - { cls: minor,    label: Single-track / minor, mi: 20 }
+
+# --- daily weather. Generate real values with:
+#     node scripts/fetch-weather.mjs data/weather-input.json ---------------
+weather:
+  - { d: '3',  where: Bari,   icon: ☀️, t: 22–29°C · 72–84°F }
+  - { d: '4',  where: Durrës, icon: 🌤, t: 21–28°C · 70–82°F }
+  - { d: '5',  where: Tirana, icon: ⛅, t: 19–30°C · 66–86°F }
+  - { d: '6',  where: Tirana, icon: 🌦, t: 18–27°C · 64–81°F }
+  - { d: '7',  where: Ohrid,  icon: ☀️, t: 17–28°C · 63–82°F }
+  - { d: '8',  where: Skopje, icon: ☀️, t: 20–33°C · 68–91°F }
+  - { d: '9',  where: Sofia,  icon: ⛈️, t: 16–26°C · 61–79°F }
+  - { d: '10', where: Sofia,  icon: 🌤, t: 17–27°C · 63–81°F }
+
+# --- OPTIONAL flourishes -----------------------------------------------------
+
+# magnified blow-up circles. cx/cy/r are PIXELS on the 1600×1200 canvas —
+# place them over empty sea/space; a leader line links back to the real spot.
+insets:
+  - { title: Lake Ohrid,     center: [41.02, 20.75], zoom: 10,   cx: 252,  cy: 640, r: 238, poiKm: 22 }
+  - { title: Skopje & Matka, center: [41.97, 21.37], zoom: 10.5, cx: 1356, cy: 312, r: 205, poiKm: 18, capMode: vert }
+
+# a wry hand-note with a leader pointing somewhere
+note:
+  anchor: [41.75, 18.35]
+  tip:    [42.35, 20.00]
+  title:  Accursed Mountains — snowed in 🏔️
+  sub:    took the coast road instead
+
+# an "onward journey" tag that arcs off the bottom edge
+finale:
+  from:  [42.698, 23.322]
+  dx:    150
+  label: Sofia · onward → Istanbul ✈

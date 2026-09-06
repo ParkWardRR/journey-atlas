@@ -45,7 +45,14 @@
     await import('leaflet/dist/leaflet.css');
 
     const params = new URLSearchParams(location.search);
-    const tile = TILES[params.get('style')] || TILES.topo;
+    // Stadia styles need a key; without one, fall back to a free look-alike so forks still render.
+    const STADIA = { watercolor: 'opentopo', stamen: 'opentopo', outdoors: 'opentopo', smooth: 'gray' };
+    let styleKey = params.get('style') || 'topo';
+    if (STADIA[styleKey] && !STADIA_KEY) {
+      console.warn(`[journey-atlas] basemap "${styleKey}" needs VITE_STADIA_API_KEY — falling back to "${STADIA[styleKey]}". See .env.example.`);
+      styleKey = STADIA[styleKey];
+    }
+    const tile = TILES[styleKey] || TILES.topo;
     const pal = PALETTES[params.get('roads')] || PALETTES.cobalt;
 
     // enlarged blow-up insets come from the data file

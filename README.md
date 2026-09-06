@@ -26,7 +26,8 @@
   <img alt="Made with" src="https://img.shields.io/badge/made%20with-☕%20%2B%20🗺️-fef3c7">
 </p>
 
-<p align="center"><img src="docs/hero-watercolor.png" alt="Adriatic Crossing — Stamen Watercolor" width="100%"></p>
+<p align="center"><img src="docs/hero-stamen.png" alt="Adriatic Crossing — Stamen Terrain" width="100%"></p>
+<p align="center"><sub>Above: the bundled fictional example on <b>Stamen Terrain</b> (a Stadia Maps basemap — <a href="#basemaps">free key, optional</a>).</sub></p>
 
 ---
 
@@ -49,13 +50,13 @@ Everything is data-driven. Swap the JSON, get a different trip. Swap `?style=`, 
 > The example in this repo is a **fictional** *Italy → Albania (by ferry) → Sofia* route —
 > handy for seeing every feature at once.
 
-## Gallery
+## Gallery — same trip, four basemaps
 
-| Stamen Watercolor | OpenTopoMap |
+| Stamen Terrain _(Stadia)_ | Stamen Watercolor _(Stadia)_ |
 |---|---|
-| ![watercolor](docs/hero-watercolor.png) | ![opentopo](docs/hero-opentopo.png) |
-| **Esri Ocean** | **Stamen Terrain** |
-| ![ocean](docs/hero-ocean.png) | ![stamen](docs/hero-stamen.png) |
+| ![stamen](docs/hero-stamen.png) | ![watercolor](docs/hero-watercolor.png) |
+| **OpenTopoMap** _(keyless)_ | **Esri Ocean** _(keyless)_ |
+| ![opentopo](docs/hero-opentopo.png) | ![ocean](docs/hero-ocean.png) |
 
 ## Quick start
 
@@ -74,24 +75,55 @@ npm run render -- watercolor    # just one
 
 Query params: `?style=<basemap>&roads=<palette>&blowups=1`.
 
-## The data file — `src/lib/journey.json`
+## Authoring a trip
+
+Trips live in [`trips/`](trips/) as **readable YAML** you (or an agent) fill in, in the order you'd
+tell the story. A build step validates it against a **JSON Schema** and compiles it to the machine
+file the map renders:
+
+```bash
+# edit trips/adriatic-crossing.yaml, then:
+npm run build:trip -- trips/adriatic-crossing.yaml
+#  → validates against schema/journey.schema.json
+#  → writes src/lib/journey.json   (errors point at the exact bad field)
+npm run dev        # see it
+```
+
+Prefer JSON? Point the same command at a `.json` file — it's accepted too. Both are validated by
+[`schema/journey.schema.json`](schema/journey.schema.json), which also gives **live autocomplete +
+inline docs** in VS Code (the example's `$schema` key wires it up automatically).
+
+### The shape
 
 | key | what it is |
 |---|---|
 | `title`, `subtitle` | headline + one-liner under it |
 | `totalMiles` | number shown in the distance legend |
-| `drives[]` | `{ label, segs: [{ cls, line: [[lat,lon]…] }] }` — `cls` ∈ `motorway \| a \| b \| minor` |
-| `ferries[]` | `{ num, short, vessel, size, dur, a:[lat,lon], b:[lat,lon] }` |
-| `stays[]` | `{ area, hotel, lat, lon, dates }` — numbered pins in trip order |
+| `stays[]` | `{ area, hotel, lat, lon, dates }` — numbered pins, in trip order |
 | `pois[]` | `{ name, lat, lon }` — auto-labelled sights |
+| `ferries[]` | `{ num, short, vessel, size, dur, a:[lat,lon], b:[lat,lon] }` |
+| `drives[]` | `{ label, segs:[{ cls, line:[[lat,lon]…] }] }` — `cls` ∈ `motorway \| a \| b \| minor` |
 | `roadStats[]` | `{ cls, label, mi }` legend rows |
-| `weather[]` | `{ d, icon, where, t }` (+ `weatherMonth`) |
+| `weather[]` | `{ d, icon, where, t }` (+ `weatherMonth`) — see the weather script below |
 | `insets[]` | blow-ups: `{ title, center:[lat,lon], zoom, cx, cy, r, poiKm, capMode? }` |
 | `note` | optional callout: `{ anchor:[lat,lon], tip:[lat,lon], title, sub }` |
 | `finale` | optional off-edge tag: `{ from:[lat,lon], dx, label }` |
 
-`cx/cy/r` are pixel coordinates on the 1600×1200 canvas — where the blow-up circle sits.
-`capMode: "vert"` tucks its caption vertically beside the bubble.
+Every coordinate is `[latitude, longitude]`. For insets, `cx/cy/r` are **pixels** on the 1600×1200
+canvas (place the circle over empty sea/space — a leader line links it back); `capMode: "vert"`
+tucks the caption vertically beside the bubble.
+
+### Let an agent draft it
+
+The schema is small and self-describing, so an LLM can fill it from a plain itinerary. Try:
+
+> Here is `schema/journey.schema.json` and my itinerary: *"Flew into Bari, overnight ferry to
+> Durrës, then drove Tirana → Ohrid → Skopje → Sofia over a week…"*. Produce a
+> `trips/my-trip.yaml` that validates against the schema. Use `[lat, lon]` coordinates, put
+> overnight bases in `stays` in order, sights in `pois`, and add a couple of `insets` over
+> empty sea. Don't invent places I didn't mention.
+
+Then `npm run build:trip -- trips/my-trip.yaml && npm run dev`.
 
 ## Helper scripts
 
@@ -124,12 +156,17 @@ The CSV just needs `latitude` and `longitude` columns.
 | `opentopo` (OpenTopoMap) | `outdoors` (Stadia Outdoors) |
 | `osm` · `hot` · `cyclosm` (OpenStreetMap family) | `smooth` (Alidade Smooth) |
 
-For the Stadia styles, grab a free key at [stadiamaps.com](https://stadiamaps.com/) and:
+The four Stadia styles (including the **Stamen Terrain** hero above) need a **free, optional** key.
+Fork the repo and it still renders with zero setup — request a Stadia style with no key and it
+**gracefully falls back** to a keyless look-alike (e.g. `stamen`/`watercolor`/`outdoors` →
+`opentopo`, `smooth` → `gray`) and logs a note. To get the real Stadia tiles, grab a free key at
+[stadiamaps.com](https://stadiamaps.com/):
 
 ```bash
-cp .env.example .env
-# then set VITE_STADIA_API_KEY=your-key
+cp .env.example .env          # then set VITE_STADIA_API_KEY=your-key
 ```
+
+The key is read from the environment only — it is **never committed** (`.env` is git-ignored).
 
 Road-colour palettes via `?roads=`: `cobalt` (default) · `signage` · `berry` · `ember`.
 
