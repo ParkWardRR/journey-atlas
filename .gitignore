@@ -9,3 +9,7 @@ node_modules
 Thumbs.db
 /output
 *.local
+
+# Go CLI build output
+/cli-go/journey-atlas
+/cli-go/dist
