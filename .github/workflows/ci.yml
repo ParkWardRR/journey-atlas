@@ -52,6 +52,11 @@ jobs:
         with:
           go-version: '1.24'
           cache-dependency-path: cli-go/go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
       - name: Build
         working-directory: cli-go
         run: go build -o journey-atlas .
@@ -62,3 +67,15 @@ jobs:
           files=(trips/*.yaml trips/*.json)
           ./cli-go/journey-atlas validate "${files[@]}"
           ./cli-go/journey-atlas doctor "${files[@]}"
+      # And its `build` output must be byte-identical to scripts/build-trip.mjs.
+      - name: Build parity vs Node
+        run: |
+          shopt -s nullglob
+          for f in trips/*.yaml trips/*.json; do
+            node scripts/build-trip.mjs "$f" >/dev/null
+            cp src/lib/journey.json /tmp/node.json
+            ./cli-go/journey-atlas build --out /tmp/go.json "$f" >/dev/null
+            diff /tmp/node.json /tmp/go.json || { echo "build mismatch on $f"; exit 1; }
+          done
+          git checkout -- src/lib/journey.json
+          echo "build output matches Node for every trip"
