@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="journey-atlas example"
+     xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>Kystriksveien sample leg</name></metadata>
+  <wpt lat="64.4670" lon="11.4950"><name>Steinkjer</name></wpt>
+  <wpt lat="65.4720" lon="12.2140"><name>Brønnøysund</name></wpt>
+  <trk>
+    <name>Steinkjer → Brønnøysund (Rv17)</name>
+    <trkseg>
+      <trkpt lat="64.0140" lon="11.4950"/>
+      <trkpt lat="64.1200" lon="11.5100"/>
+      <trkpt lat="64.2400" lon="11.7000"/>
+      <trkpt lat="64.3600" lon="11.9000"/>
+      <trkpt lat="64.4000" lon="11.9050"/>
+      <trkpt lat="64.4800" lon="12.0100"/>
+      <trkpt lat="64.6900" lon="12.1900"/>
+      <trkpt lat="64.8600" lon="12.2000"/>
+      <trkpt lat="65.0500" lon="12.1500"/>
+      <trkpt lat="65.2200" lon="12.0780"/>
+      <trkpt lat="65.3600" lon="12.1800"/>
+      <trkpt lat="65.4720" lon="12.2140"/>
+    </trkseg>
+  </trk>
+</gpx>

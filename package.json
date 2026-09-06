@@ -22,6 +22,7 @@
     "render": "node scripts/render.mjs",
     "render:all": "node scripts/render-all.mjs",
     "doctor": "node scripts/trip-doctor.mjs",
+    "gpx": "node scripts/gpx-import.mjs",
     "weather": "node scripts/fetch-weather.mjs",
     "verify-gps": "node scripts/verify-gps.mjs"
   },
