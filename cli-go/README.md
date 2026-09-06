@@ -7,6 +7,7 @@ the pipeline that are pure data-in / exit-code-out (no browser, no map render):
 |---|---|---|
 | `journey-atlas validate <trip…>` | `scripts/build-trip.mjs` (validation half) | schema-validate each trip against `schema/journey.schema.json` |
 | `journey-atlas doctor <trip…>` | `scripts/trip-doctor.mjs` | plausibility lint: coordinate ranges, likely-swapped lat/lon, `totalMiles` vs summed `roadStats`, drive classes vs legend, degenerate ferries, insets off the 1600×1200 canvas |
+| `journey-atlas build <trip>` | `scripts/build-trip.mjs` | validate, then compile to `src/lib/journey.json` (`--out` to redirect) |
 | `journey-atlas version` | — | print version |
 
 Both accept **YAML or JSON** trips (JSON is valid YAML, so one path handles both) and
@@ -21,14 +22,18 @@ go build -o journey-atlas .
 # from the repo root so the default --schema path resolves:
 ./cli-go/journey-atlas validate trips/*.yaml
 ./cli-go/journey-atlas doctor   trips/*.yaml
-./cli-go/journey-atlas --schema schema/journey.schema.json validate my-trip.json
+./cli-go/journey-atlas build    trips/01-norway-kystriksveien.yaml   # → src/lib/journey.json
+./cli-go/journey-atlas build --out /tmp/j.json trips/adriatic-crossing.yaml
 ```
 
-Output matches the Node `trip-doctor` line-for-line, so you can swap either in.
+Per-subcommand flags come **before** the file (Go stdlib convention).
+`doctor` output matches the Node `trip-doctor` line-for-line, and `build` output is
+**byte-for-byte identical** to `scripts/build-trip.mjs` (source key order preserved,
+`$schema` first, no HTML escaping) — so you can swap either implementation in.
 
 ## Status
 
-**Prototype.** Covers `validate` + `doctor`. Not yet ported: `build` (writing
-`src/lib/journey.json`), weather fetch, and GPX/KML import — those stay in Node for now.
+**Prototype.** Covers `validate`, `doctor`, and `build`. Not yet ported: weather fetch
+and GPX/KML import — those stay in Node for now.
 Dependencies: [`santhosh-tekuri/jsonschema`](https://github.com/santhosh-tekuri/jsonschema)
 (draft 2020-12) and `gopkg.in/yaml.v3`.

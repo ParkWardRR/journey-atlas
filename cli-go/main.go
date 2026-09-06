@@ -18,26 +18,32 @@ import (
 const version = "0.1.0-prototype"
 
 func main() {
-	schema := flag.String("schema", "schema/journey.schema.json", "path to journey JSON Schema")
-	flag.Usage = usage
-	flag.Parse()
-
-	args := flag.Args()
-	if len(args) == 0 {
+	if len(os.Args) < 2 {
 		usage()
 		os.Exit(2)
 	}
-	cmd, files := args[0], args[1:]
+	cmd, rest := os.Args[1], os.Args[2:]
 
 	switch cmd {
 	case "version", "--version", "-v":
 		fmt.Println("journey-atlas", version)
-	case "validate":
-		os.Exit(runValidate(*schema, files))
-	case "doctor":
-		os.Exit(runDoctor(files))
 	case "help", "--help", "-h":
 		usage()
+	case "validate":
+		fs := flag.NewFlagSet("validate", flag.ExitOnError)
+		schema := fs.String("schema", "schema/journey.schema.json", "path to journey JSON Schema")
+		fs.Parse(rest)
+		os.Exit(runValidate(*schema, fs.Args()))
+	case "doctor":
+		fs := flag.NewFlagSet("doctor", flag.ExitOnError)
+		fs.Parse(rest)
+		os.Exit(runDoctor(fs.Args()))
+	case "build":
+		fs := flag.NewFlagSet("build", flag.ExitOnError)
+		schema := fs.String("schema", "schema/journey.schema.json", "path to journey JSON Schema")
+		out := fs.String("out", "src/lib/journey.json", "output path for the compiled journey.json")
+		fs.Parse(rest)
+		os.Exit(runBuild(*schema, *out, fs.Args()))
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command %q\n\n", cmd)
 		usage()
@@ -51,10 +57,12 @@ func usage() {
 usage:
   journey-atlas validate <trip...>   schema-validate each trip (YAML or JSON)
   journey-atlas doctor   <trip...>   plausibility lint (ranges, canvas, ferries…)
+  journey-atlas build    <trip>      validate + compile to src/lib/journey.json
   journey-atlas version              print version
 
-flags:
-  --schema <path>   JSON Schema to validate against (default schema/journey.schema.json)
+flags (before the file, per subcommand):
+  validate --schema <path>          JSON Schema (default schema/journey.schema.json)
+  build    --schema <path> --out <path>   default out: src/lib/journey.json
 `)
 }
 
@@ -129,5 +137,32 @@ func runDoctor(files []string) int {
 	if bad > 0 {
 		return 1
 	}
+	return 0
+}
+
+func runBuild(schemaPath, outPath string, files []string) int {
+	if len(files) != 1 {
+		fmt.Fprintln(os.Stderr, "build takes exactly one trip file")
+		return 2
+	}
+	v, err := newValidator(schemaPath)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "cannot load schema:", err)
+		return 2
+	}
+	src := files[0]
+	msgs, err := buildJourney(v, src, outPath)
+	if err != nil {
+		fmt.Printf("✗ %s  — %v\n", src, err)
+		return 1
+	}
+	if len(msgs) > 0 {
+		fmt.Printf("✗ %s is not a valid trip:\n", src)
+		for _, m := range msgs {
+			fmt.Printf("    %s\n", m)
+		}
+		return 1
+	}
+	fmt.Printf("✓ %s → %s\n", src, outPath)
 	return 0
 }
