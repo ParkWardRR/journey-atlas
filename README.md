@@ -68,9 +68,11 @@ npm install
 # 1) preview live in the browser
 npm run dev            # → http://localhost:5173/?style=opentopo&roads=signage&blowups=1
 
-# 2) render PNGs (dev server must be running in another terminal)
+# 2) render PNGs — no second terminal: if nothing is serving the app,
+#    render starts (and stops) Vite for you.
 npm run render                  # all keyless basemaps → output/
 npm run render -- watercolor    # just one
+npm run render:all              # build + render EVERY trips/*.yaml → output/samples/
 ```
 
 Query params: `?style=<basemap>&roads=<palette>&blowups=1`.
@@ -159,6 +161,18 @@ Then `npm run build:trip -- trips/my-trip.yaml && npm run dev`.
 
 ## Helper scripts
 
+**Trip doctor** — plausibility lint beyond raw schema validation. Flags coordinates out of
+range or clearly swapped, inset circles that fall off the 1600×1200 canvas, a `totalMiles`
+that disagrees with the summed `roadStats`, drive road-classes missing from the legend, and
+degenerate/absurd ferry legs. Exits non-zero on hard errors, so it doubles as a CI gate:
+
+```bash
+npm run doctor -- trips/*.yaml
+# ✓ trips/01-norway-kystriksveien.yaml  — clean
+# ⚠ trips/adriatic-crossing.yaml
+#     warn   road class "b" is in the legend but never driven
+```
+
 **Real historical weather** — no key, from the Open-Meteo archive:
 
 ```bash
@@ -207,7 +221,8 @@ Road-colour palettes via `?roads=`: `cobalt` (default) · `signage` · `berry` �
 The map is a normal SvelteKit page ([`src/routes/+page.svelte`](src/routes/+page.svelte)) that draws
 onto a fixed 1600×1200 card with [Leaflet](https://leafletjs.com/). `scripts/render.mjs` drives a
 headless Chromium ([Playwright](https://playwright.dev/)), waits for tiles to settle
-(`window.__mapReady`), and screenshots `#journey-card`. No servers, no accounts, no tracking.
+(`window.__mapReady`), and screenshots `#journey-card` — starting and stopping its own Vite
+server when one isn't already running. No accounts, no tracking.
 
 ## Credits
 

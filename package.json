@@ -20,6 +20,8 @@
     "preview": "vite preview",
     "build:trip": "node scripts/build-trip.mjs",
     "render": "node scripts/render.mjs",
+    "render:all": "node scripts/render-all.mjs",
+    "doctor": "node scripts/trip-doctor.mjs",
     "weather": "node scripts/fetch-weather.mjs",
     "verify-gps": "node scripts/verify-gps.mjs"
   },
