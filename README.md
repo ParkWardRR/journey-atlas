@@ -89,10 +89,37 @@ npm run build:trip -- trips/adriatic-crossing.yaml
 npm run dev        # see it
 ```
 
-**Ten ready-to-tune starter routes** ship in [`trips/`](trips/) — Norway's Kystriksveien, the
-Outer Hebrides, the NZ Cook Strait crossing, Iceland's Westfjords, BC's Coastal Circle, Prince
-William Sound, Tasmania, the Dalmatian islands, the Ionian circuit and Tierra del Fuego — each with
-real ferry crossings, stops and sights, ready to refine.
+**Ten ready-to-tune starter routes** ship in [`trips/`](trips/) — each with real ferry crossings,
+overnight bases, sights and a distance legend, ready to refine. The maps below were rendered
+straight from those YAMLs on **Stamen Terrain** (`npm run build:trip -- trips/<file>` then
+`npm run render -- stamen`):
+
+### Starter routes gallery
+
+| Norway — Kystriksveien | Scotland — Outer Hebrides |
+|---|---|
+| ![Norway Kystriksveien](docs/trips/01-norway-kystriksveien.png) | ![Scotland Outer Hebrides](docs/trips/02-scotland-outer-hebrides.png) |
+| **New Zealand — Cook Strait** | **Iceland — Westfjords** |
+| ![New Zealand grand drive](docs/trips/03-new-zealand-grand-drive.png) | ![Iceland Westfjords](docs/trips/04-iceland-westfjords.png) |
+| **BC — Sunshine Coast & Island** | **Alaska — Prince William Sound** |
+| ![BC Sunshine Coast](docs/trips/05-bc-sunshine-coast-island.png) | ![Alaska Prince William Sound](docs/trips/06-alaska-prince-william-sound.png) |
+| **Tasmania — Island Loop** | **Croatia — Dalmatian Islands** |
+| ![Tasmania island loop](docs/trips/07-tasmania-island-loop.png) | ![Croatia Dalmatian islands](docs/trips/08-croatia-dalmatian-islands.png) |
+| **Greece — Ionian & Peloponnese** | **Patagonia — Tierra del Fuego** |
+| ![Greece Ionian Peloponnese](docs/trips/09-greece-ionian-peloponnese.png) | ![Patagonia Tierra del Fuego](docs/trips/10-patagonia-tierra-del-fuego.png) |
+
+| # | Route | Region | Ferry crossings |
+|---|---|---|---|
+| 01 | [Kystriksveien](trips/01-norway-kystriksveien.yaml) — Steinkjer → Bodø → Lofoten | Norway | 5 |
+| 02 | [Outer Hebrides](trips/02-scotland-outer-hebrides.yaml) | Scotland | 4 |
+| 03 | [Cook Strait Crossing](trips/03-new-zealand-grand-drive.yaml) — Wellington → Fiordland | New Zealand | 1 |
+| 04 | [Westfjords](trips/04-iceland-westfjords.yaml) | Iceland | 1 |
+| 05 | [Sunshine Coast & Island](trips/05-bc-sunshine-coast-island.yaml) | British Columbia | 4 |
+| 06 | [Prince William Sound](trips/06-alaska-prince-william-sound.yaml) | Alaska | 2 |
+| 07 | [Island Loop](trips/07-tasmania-island-loop.yaml) | Tasmania | 1 |
+| 08 | [Dalmatian Loop](trips/08-croatia-dalmatian-islands.yaml) — Split → Dubrovnik | Croatia | 5 |
+| 09 | [Ionian & Peloponnese](trips/09-greece-ionian-peloponnese.yaml) | Greece | 4 |
+| 10 | [Tierra del Fuego](trips/10-patagonia-tierra-del-fuego.yaml) | Patagonia | 1 |
 
 Prefer JSON? Point the same command at a `.json` file — it's accepted too. Both are validated by
 [`schema/journey.schema.json`](schema/journey.schema.json), which also gives **live autocomplete +
