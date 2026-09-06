@@ -66,14 +66,38 @@ cd journey-atlas
 npm install
 
 # 1) preview live in the browser
-npm run dev            # → http://localhost:5173/?style=opentopo&roads=signage&blowups=1
+npm run dev
+#   http://localhost:5173/         the print poster (what render screenshots)
+#   http://localhost:5173/trip     the interactive, themed web UI
 
 # 2) render PNGs (dev server must be running in another terminal)
 npm run render                  # all keyless basemaps → output/
 npm run render -- watercolor    # just one
 ```
 
-Query params: `?style=<basemap>&roads=<palette>&blowups=1`.
+Poster query params: `?style=<basemap>&roads=<palette>&blowups=1`.
+
+## Interactive web UI & themes
+
+`/trip` is a responsive, browsable page built from the same trip file: a big
+**interactive map** (zoom / pan, clickable stay pins, sights and ferries) followed by an
+itinerary timeline, sights, ferry list, daily-weather grid and a distance-by-road breakdown.
+
+| Daylight | Night |
+|---|---|
+| ![Daylight theme](docs/web-daylight.png) | ![Night theme](docs/web-night.png) |
+| **Vintage** | **Minimal** |
+| ![Vintage theme](docs/web-vintage.png) | ![Minimal theme](docs/web-minimal.png) |
+
+
+Pick from four **curated themes** — **Daylight**, **Night**, **Vintage** and **Minimal** — in the
+header. The choice is remembered (localStorage) and defaults to your system light/dark preference.
+Each theme also sets a sensible default **basemap** and **road palette**, both overridable from the
+dropdowns beside it (Night applies a dark-map tile filter over any basemap).
+
+It's a static build — `npm run build` prerenders `/` **and** `/trip` into `build/` with
+`@sveltejs/adapter-static`, so the whole thing hosts as plain files with no server. Swap
+`trips/*.yaml`, rebuild, and both the poster and the web page update from the same data.
 
 ## Authoring a trip
 
