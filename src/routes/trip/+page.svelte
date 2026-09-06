@@ -74,7 +74,7 @@
   <header class="hero">
     <div class="hero-inner">
       <div class="hero-lead">
-        <p class="eyebrow">journey-atlas</p>
+        <p class="eyebrow"><a class="eyebrow-link" href="gallery">journey-atlas</a> · <a class="eyebrow-link" href="gallery">all journeys →</a></p>
         <h1>{data.title}</h1>
         {#if data.subtitle}<p class="subtitle">{data.subtitle}</p>{/if}
       </div>
@@ -244,6 +244,8 @@
     display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; justify-content: space-between;
   }
   .eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); }
+  .eyebrow-link { color: inherit; text-decoration: none; }
+  .eyebrow-link:hover { text-decoration: underline; }
   h1 { margin: 0; font-family: var(--heading-font); font-size: clamp(30px, 5vw, 46px); font-weight: 800; letter-spacing: var(--heading-spacing); line-height: 1.05; }
   .subtitle { margin: 10px 0 0; font-size: 16px; font-weight: 500; color: var(--text-muted); max-width: 46ch; }
 

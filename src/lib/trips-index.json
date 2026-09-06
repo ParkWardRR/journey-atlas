@@ -1,0 +1,123 @@
+[
+  {
+    "slug": "01-norway-kystriksveien",
+    "title": "Kystriksveien",
+    "subtitle": "Steinkjer → Bodø → Lofoten · Norway's ferry road",
+    "totalMiles": 500,
+    "stays": 6,
+    "ferries": 5,
+    "pois": 7,
+    "thumb": "01-norway-kystriksveien.png",
+    "src": "trips/01-norway-kystriksveien.yaml"
+  },
+  {
+    "slug": "02-scotland-outer-hebrides",
+    "title": "Hebridean Hop",
+    "subtitle": "Ullapool → Lewis → Barra → Oban · Scotland's island chain",
+    "totalMiles": 340,
+    "stays": 6,
+    "ferries": 4,
+    "pois": 6,
+    "thumb": "02-scotland-outer-hebrides.png",
+    "src": "trips/02-scotland-outer-hebrides.yaml"
+  },
+  {
+    "slug": "03-new-zealand-grand-drive",
+    "title": "Cook Strait Crossing",
+    "subtitle": "Wellington → Picton → Fiordland · both islands, one drive",
+    "totalMiles": 1150,
+    "stays": 7,
+    "ferries": 1,
+    "pois": 8,
+    "thumb": "03-new-zealand-grand-drive.png",
+    "src": "trips/03-new-zealand-grand-drive.yaml"
+  },
+  {
+    "slug": "04-iceland-westfjords",
+    "title": "Baldur Crossing",
+    "subtitle": "Reykjavík → Snæfellsnes → Westfjords · Iceland's quiet corner",
+    "totalMiles": 560,
+    "stays": 5,
+    "ferries": 1,
+    "pois": 6,
+    "thumb": "04-iceland-westfjords.png",
+    "src": "trips/04-iceland-westfjords.yaml"
+  },
+  {
+    "slug": "05-bc-sunshine-coast-island",
+    "title": "Coastal Circle",
+    "subtitle": "Vancouver → Sunshine Coast → Vancouver Island · BC by ferry",
+    "totalMiles": 460,
+    "stays": 6,
+    "ferries": 4,
+    "pois": 6,
+    "thumb": "05-bc-sunshine-coast-island.png",
+    "src": "trips/05-bc-sunshine-coast-island.yaml"
+  },
+  {
+    "slug": "06-alaska-prince-william-sound",
+    "title": "Prince William Sound",
+    "subtitle": "Anchorage → Cordova → Valdez · a tidewater-glacier loop",
+    "totalMiles": 620,
+    "stays": 5,
+    "ferries": 2,
+    "pois": 6,
+    "thumb": "06-alaska-prince-william-sound.png",
+    "src": "trips/06-alaska-prince-william-sound.yaml"
+  },
+  {
+    "slug": "07-tasmania-island-loop",
+    "title": "Spirit of Tasmania",
+    "subtitle": "Melbourne → Devonport → the whole island · overnight sail + loop",
+    "totalMiles": 780,
+    "stays": 6,
+    "ferries": 1,
+    "pois": 7,
+    "thumb": "07-tasmania-island-loop.png",
+    "src": "trips/07-tasmania-island-loop.yaml"
+  },
+  {
+    "slug": "08-croatia-dalmatian-islands",
+    "title": "Dalmatian Loop",
+    "subtitle": "Split → Brač → Hvar → Korčula → Dubrovnik · warm-water island hops",
+    "totalMiles": 240,
+    "stays": 6,
+    "ferries": 5,
+    "pois": 7,
+    "thumb": "08-croatia-dalmatian-islands.png",
+    "src": "trips/08-croatia-dalmatian-islands.yaml"
+  },
+  {
+    "slug": "09-greece-ionian-peloponnese",
+    "title": "Ionian Circuit",
+    "subtitle": "Peloponnese → Zakynthos → Kefalonia → Corfu · drive-and-sail Greece",
+    "totalMiles": 520,
+    "stays": 6,
+    "ferries": 4,
+    "pois": 8,
+    "thumb": "09-greece-ionian-peloponnese.png",
+    "src": "trips/09-greece-ionian-peloponnese.yaml"
+  },
+  {
+    "slug": "10-patagonia-tierra-del-fuego",
+    "title": "End of Route 3",
+    "subtitle": "Punta Arenas → Strait of Magellan → Ushuaia · to the edge of the world",
+    "totalMiles": 380,
+    "stays": 4,
+    "ferries": 1,
+    "pois": 6,
+    "thumb": "10-patagonia-tierra-del-fuego.png",
+    "src": "trips/10-patagonia-tierra-del-fuego.yaml"
+  },
+  {
+    "slug": "adriatic-crossing",
+    "title": "Adriatic Crossing",
+    "subtitle": "Italy → Albania → Sofia · a fictional example route",
+    "totalMiles": 415,
+    "stays": 6,
+    "ferries": 2,
+    "pois": 7,
+    "thumb": null,
+    "src": "trips/adriatic-crossing.yaml"
+  }
+]

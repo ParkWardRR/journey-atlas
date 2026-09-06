@@ -16,9 +16,11 @@
   ],
   "scripts": {
     "dev": "vite dev",
+    "prebuild": "node scripts/build-index.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "build:trip": "node scripts/build-trip.mjs",
+    "build:index": "node scripts/build-index.mjs",
     "render": "node scripts/render.mjs",
     "render:all": "node scripts/render-all.mjs",
     "doctor": "node scripts/trip-doctor.mjs",
