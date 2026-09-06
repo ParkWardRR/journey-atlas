@@ -1,42 +1,45 @@
-// Render the map to PNG(s) with Playwright (headless Chromium).
+// Render the current trip (src/lib/journey.json) to PNG(s) with headless Chromium.
 //
-//   npm run dev                       # in one terminal (serves http://localhost:5173)
-//   npm run render                    # renders the default set of basemaps
-//   npm run render -- watercolor      # render just one style
+//   npm run render                    # every keyless basemap → output/
+//   npm run render -- watercolor      # just one style
+//   npm run render -- --out hero stamen   # write output/hero-stamen.png
 //   URL=http://localhost:5173 npm run render
 //
-// Every basemap works without a key EXCEPT the Stadia styles
-// (watercolor, stamen, outdoors, smooth) which need VITE_STADIA_API_KEY.
+// No second terminal needed: if nothing is serving the app, we start `vite dev`
+// ourselves and stop it when done. Stadia styles (watercolor, stamen, outdoors,
+// smooth) need VITE_STADIA_API_KEY; without it they fall back to keyless tiles.
 
-import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
+import { ensureServer } from './lib/server.mjs';
+import { withBrowser, shoot, KEYLESS, ALL } from './lib/shoot.mjs';
 
 const BASE = process.env.URL || 'http://localhost:5173';
 const OUT = 'output';
 const ROADS = process.env.ROADS || 'signage';
 mkdirSync(OUT, { recursive: true });
 
-// keyless basemaps + (if a key is set) the Stadia ones
-const ALL = ['topo', 'natgeo', 'imagery', 'street', 'ocean', 'opentopo', 'osm', 'cyclosm', 'hot',
-             'watercolor', 'stamen', 'outdoors', 'smooth'];
-const styles = process.argv.slice(2).length ? process.argv.slice(2) : ALL;
-
-async function shoot(page, style) {
-  const url = `${BASE}/?style=${style}&roads=${ROADS}&blowups=1`;
-  await page.goto(url, { waitUntil: 'load' });
-  await page.waitForSelector('#journey-card', { state: 'visible' });
-  await page.waitForFunction(() => window.__mapReady === true, { timeout: 55000 }).catch(() => {});
-  await page.waitForTimeout(4000);
-  const el = await page.$('#journey-card');
-  await el.screenshot({ path: `${OUT}/journey-${style}.png` });
-  console.log(`wrote ${OUT}/journey-${style}.png`);
+// args: [--out <prefix>] [style ...]   — default set is the keyless basemaps
+const args = process.argv.slice(2);
+let prefix = 'journey';
+const styles = [];
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--out') { prefix = args[++i]; continue; }
+  styles.push(args[i]);
 }
+const wanted = styles.length ? styles : KEYLESS;
+const unknown = wanted.filter((s) => !ALL.includes(s));
+if (unknown.length) console.warn(`⚠ unknown basemap(s): ${unknown.join(', ')} — will try anyway`);
 
-const browser = await chromium.launch();
-const context = await browser.newContext({ viewport: { width: 1600, height: 1200 }, deviceScaleFactor: 1 });
-for (const s of styles) {
-  const page = await context.newPage();
-  await shoot(page, s).catch((e) => console.error(`FAILED ${s}:`, e.message));
-  await page.close();
+const server = await ensureServer(BASE);
+try {
+  await withBrowser(async (context) => {
+    for (const style of wanted) {
+      const outPath = `${OUT}/${prefix}-${style}.png`;
+      await shoot(context, { base: server.url, style, roads: ROADS, outPath })
+        .then((p) => console.log(`wrote ${p}`))
+        .catch((e) => console.error(`FAILED ${style}: ${e.message}`));
+    }
+  });
+} finally {
+  await server.stop();
 }
-await browser.close();
