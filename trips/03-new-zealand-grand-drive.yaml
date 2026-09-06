@@ -1,0 +1,48 @@
+# New Zealand — North–South Grand Drive
+# Wellington → Cook Strait ferry → Picton, then the South Island's greatest hits.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    Cook Strait Crossing
+subtitle: Wellington → Picton → Fiordland · both islands, one drive
+totalMiles: 1150
+weatherMonth: February
+
+stays:
+  - { area: Wellington,   hotel: QT Wellington,        lat: -41.290, lon: 174.778, dates: Day 1 }
+  - { area: Picton,       hotel: Picton Yacht Club,    lat: -41.291, lon: 174.000, dates: Day 2 }
+  - { area: Nelson,       hotel: Rutherford Hotel,     lat: -41.271, lon: 173.284, dates: Day 3 }
+  - { area: Franz Josef,  hotel: Te Waonui Forest,     lat: -43.389, lon: 170.183, dates: Day 4 }
+  - { area: Queenstown,   hotel: Eichardt's,           lat: -45.032, lon: 168.660, dates: Day 5–6 }
+  - { area: Te Anau,      hotel: Fiordland Lodge,      lat: -45.415, lon: 167.718, dates: Day 7 }
+  - { area: Dunedin,      hotel: Distinction Dunedin,  lat: -45.874, lon: 170.504, dates: Day 8 }
+
+pois:
+  - { name: Marlborough Sounds, lat: -41.180, lon: 174.100 }
+  - { name: Abel Tasman,        lat: -40.900, lon: 173.050 }
+  - { name: Pancake Rocks,      lat: -42.115, lon: 171.328 }
+  - { name: Franz Josef Glacier, lat: -43.466, lon: 170.190 }
+  - { name: Aoraki / Mt Cook,   lat: -43.595, lon: 170.142 }
+  - { name: Milford Sound,      lat: -44.671, lon: 167.926 }
+  - { name: Nugget Point,       lat: -46.448, lon: 169.815 }
+  - { name: Moeraki Boulders,   lat: -45.346, lon: 170.826 }
+
+ferries:
+  - { num: 1, short: Wellington → Picton, vessel: Interislander, size: Cook Strait, dur: 3h 30m, a: [-41.283, 174.782], b: [-41.291, 174.000] }
+
+drives:
+  - label: South Island
+    segs:
+      - { cls: a,        line: [[-41.291, 174.000], [-41.271, 173.284]] }
+      - { cls: a,        line: [[-41.271, 173.284], [-42.115, 171.328], [-43.389, 170.183]] }
+      - { cls: a,        line: [[-43.389, 170.183], [-44.100, 169.250], [-45.032, 168.660]] }
+      - { cls: a,        line: [[-45.032, 168.660], [-45.415, 167.718]] }
+      - { cls: motorway, line: [[-45.415, 167.718], [-45.870, 168.740], [-45.874, 170.504]] }
+
+roadStats:
+  - { cls: motorway, label: State highway, mi: 520 }
+  - { cls: a,        label: Alpine / coast, mi: 630 }
+
+finale:
+  from:  [-45.874, 170.504]
+  dx:    130
+  label: Dunedin · onward → the Catlins ↘

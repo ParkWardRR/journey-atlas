@@ -1,0 +1,52 @@
+# Norway — Helgeland Coastal Route (Kystriksveien / Route 17)
+# Steinkjer → Bodø → Lofoten. Six vehicle ferries, glaciers, Arctic Circle.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    Kystriksveien
+subtitle: Steinkjer → Bodø → Lofoten · Norway's ferry road
+totalMiles: 500
+weatherMonth: July
+
+stays:
+  - { area: Steinkjer,     hotel: Tingvold Park Hotel, lat: 64.015, lon: 11.495, dates: Day 1 }
+  - { area: Brønnøysund,   hotel: Thon Hotel,          lat: 65.474, lon: 12.211, dates: Day 2 }
+  - { area: Sandnessjøen,  hotel: Scandic Syv Søstre,  lat: 66.021, lon: 12.631, dates: Day 3 }
+  - { area: Ørnes,         hotel: Ørnes Hotell,        lat: 66.868, lon: 13.703, dates: Day 4 }
+  - { area: Bodø,          hotel: Scandic Havet,       lat: 67.280, lon: 14.405, dates: Day 5 }
+  - { area: Reine,         hotel: Reine Rorbuer,       lat: 67.933, lon: 13.088, dates: Day 6–7 }
+
+pois:
+  - { name: Torghatten,        lat: 65.398, lon: 12.093 }
+  - { name: Seven Sisters,     lat: 65.947, lon: 12.651 }
+  - { name: Svartisen Glacier, lat: 66.641, lon: 13.775 }
+  - { name: Saltstraumen,      lat: 67.230, lon: 14.623 }
+  - { name: Kjerringøy,        lat: 67.533, lon: 14.783 }
+  - { name: Hamnøy,            lat: 67.945, lon: 13.138 }
+  - { name: Henningsvær,       lat: 68.153, lon: 14.204 }
+
+ferries:
+  - { num: 1, short: Vennesund → Holm,        vessel: Torghatten Nord, dur: 20m,     a: [65.220, 12.078], b: [65.322, 12.180] }
+  - { num: 2, short: Forvik → Tjøtta,         vessel: Torghatten Nord, dur: 1h 05m,  a: [65.520, 12.315], b: [65.822, 12.415] }
+  - { num: 3, short: Kilboghamn → Jektvik,    vessel: Torghatten Nord, dur: 1h 00m,  a: [66.437, 13.243], b: [66.616, 13.500] }
+  - { num: 4, short: Ågskaret → Forøy,        vessel: Torghatten Nord, dur: 10m,     a: [66.742, 13.582], b: [66.782, 13.632] }
+  - { num: 5, short: Bodø → Moskenes,         vessel: Torghatten Nord, dur: 3h 15m,  a: [67.288, 14.372], b: [67.877, 13.008] }
+
+drives:
+  - label: Kystriksveien north
+    segs:
+      - { cls: a,     line: [[64.015, 11.495], [64.870, 12.220], [65.474, 12.211]] }
+      - { cls: a,     line: [[65.474, 12.211], [65.822, 12.415], [66.021, 12.631]] }
+      - { cls: minor, line: [[66.021, 12.631], [66.437, 13.243], [66.616, 13.500], [66.868, 13.703]] }
+      - { cls: a,     line: [[66.868, 13.703], [67.100, 14.050], [67.280, 14.405]] }
+  - label: Lofoten
+    segs:
+      - { cls: a,     line: [[67.877, 13.008], [67.945, 13.138], [67.933, 13.088]] }
+
+roadStats:
+  - { cls: a,     label: Highway (Rv17), mi: 330 }
+  - { cls: minor, label: Coastal / scenic, mi: 170 }
+
+finale:
+  from:  [68.153, 14.204]
+  dx:    120
+  label: Lofoten · onward → Narvik ↗

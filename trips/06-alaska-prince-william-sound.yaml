@@ -1,0 +1,43 @@
+# Alaska — Prince William Sound Loop
+# Anchorage → Whittier → (ferry) Cordova → (ferry) Valdez → Richardson/Glenn Hwy → home.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    Prince William Sound
+subtitle: Anchorage → Cordova → Valdez · a tidewater-glacier loop
+totalMiles: 620
+weatherMonth: July
+
+stays:
+  - { area: Anchorage,  hotel: Hotel Captain Cook,  lat: 61.217, lon: -149.895, dates: Day 1 }
+  - { area: Whittier,   hotel: Inn at Whittier,     lat: 60.773, lon: -148.685, dates: Day 2 }
+  - { area: Cordova,    hotel: Reluctant Fisherman, lat: 60.543, lon: -145.757, dates: Day 3–4 }
+  - { area: Valdez,     hotel: Best Western Valdez, lat: 61.131, lon: -146.348, dates: Day 5 }
+  - { area: Glennallen, hotel: Caribou Hotel,       lat: 62.109, lon: -145.541, dates: Day 6 }
+
+pois:
+  - { name: Portage Glacier,   lat: 60.783, lon: -148.833 }
+  - { name: Childs Glacier,    lat: 60.677, lon: -145.000 }
+  - { name: Worthington Glacier, lat: 61.169, lon: -145.750 }
+  - { name: Bridal Veil Falls, lat: 61.098, lon: -145.930 }
+  - { name: Thompson Pass,     lat: 61.145, lon: -145.740 }
+  - { name: Matanuska Glacier, lat: 61.770, lon: -147.750 }
+
+ferries:
+  - { num: 1, short: Whittier → Cordova, vessel: AMHS M/V Aurora,   dur: 6h 45m, a: [60.773, -148.683], b: [60.545, -145.760] }
+  - { num: 2, short: Cordova → Valdez,   vessel: AMHS M/V Aurora,   dur: 3h 30m, a: [60.545, -145.760], b: [61.124, -146.350] }
+
+drives:
+  - label: Whittier & the highways
+    segs:
+      - { cls: motorway, line: [[61.217, -149.895], [60.900, -149.100], [60.773, -148.685]] }
+      - { cls: a,        line: [[61.124, -146.350], [61.145, -145.740], [61.770, -147.750], [62.109, -145.541]] }
+      - { cls: motorway, line: [[62.109, -145.541], [61.600, -147.500], [61.217, -149.895]] }
+
+roadStats:
+  - { cls: motorway, label: Glenn / Seward Hwy, mi: 380 }
+  - { cls: a,        label: Richardson Hwy,     mi: 240 }
+
+finale:
+  from:  [61.217, -149.895]
+  dx:    130
+  label: Anchorage · onward → Denali ↗

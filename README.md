@@ -89,6 +89,11 @@ npm run build:trip -- trips/adriatic-crossing.yaml
 npm run dev        # see it
 ```
 
+**Ten ready-to-tune starter routes** ship in [`trips/`](trips/) — Norway's Kystriksveien, the
+Outer Hebrides, the NZ Cook Strait crossing, Iceland's Westfjords, BC's Coastal Circle, Prince
+William Sound, Tasmania, the Dalmatian islands, the Ionian circuit and Tierra del Fuego — each with
+real ferry crossings, stops and sights, ready to refine.
+
 Prefer JSON? Point the same command at a `.json` file — it's accepted too. Both are validated by
 [`schema/journey.schema.json`](schema/journey.schema.json), which also gives **live autocomplete +
 inline docs** in VS Code (the example's `$schema` key wires it up automatically).

@@ -1,0 +1,48 @@
+# Croatia — Dalmatian Coast + Island Loop
+# Split → Brač → Hvar → Korčula → Pelješac → Dubrovnik, on short vehicle ferries.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    Dalmatian Loop
+subtitle: Split → Brač → Hvar → Korčula → Dubrovnik · warm-water island hops
+totalMiles: 240
+weatherMonth: September
+
+stays:
+  - { area: Split,     hotel: Hotel Park Split,    lat: 43.508, lon: 16.440, dates: Day 1 }
+  - { area: Bol,       hotel: Hotel Kaštil,        lat: 43.261, lon: 16.655, dates: Day 2 }
+  - { area: Hvar Town, hotel: Palace Elisabeth,    lat: 43.172, lon: 16.442, dates: Day 3 }
+  - { area: Korčula,   hotel: Aminess Korčula,     lat: 42.960, lon: 17.135, dates: Day 4 }
+  - { area: Ston,      hotel: Ostrea Hotel,        lat: 42.838, lon: 17.700, dates: Day 5 }
+  - { area: Dubrovnik, hotel: Hotel Excelsior,     lat: 42.640, lon: 18.108, dates: Day 6 }
+
+pois:
+  - { name: Diocletian's Palace, lat: 43.508, lon: 16.440 }
+  - { name: Zlatni Rat,          lat: 43.256, lon: 16.635 }
+  - { name: Pakleni Islands,     lat: 43.157, lon: 16.400 }
+  - { name: Marco Polo House,    lat: 42.960, lon: 17.136 }
+  - { name: Mljet National Park, lat: 42.780, lon: 17.360 }
+  - { name: Ston Walls,          lat: 42.838, lon: 17.698 }
+  - { name: Dubrovnik Old Town,  lat: 42.641, lon: 18.110 }
+
+ferries:
+  - { num: 1, short: Split → Supetar,     vessel: Jadrolinija, dur: 50m, a: [43.503, 16.438], b: [43.383, 16.550] }
+  - { num: 2, short: Sumartin → Makarska, vessel: Jadrolinija, dur: 1h, a: [43.286, 16.870], b: [43.297, 17.017] }
+  - { num: 3, short: Drvenik → Sućuraj,   vessel: Jadrolinija, dur: 35m, a: [43.157, 17.235], b: [43.128, 17.190] }
+  - { num: 4, short: Hvar → Korčula,      vessel: Kapetan Luka, dur: 1h 20m, a: [43.172, 16.442], b: [42.960, 17.135] }
+  - { num: 5, short: Orebić → Korčula,    vessel: Jadrolinija, dur: 15m, a: [42.975, 17.175], b: [42.960, 17.135] }
+
+drives:
+  - label: Islands & Pelješac
+    segs:
+      - { cls: a,     line: [[43.383, 16.550], [43.261, 16.655], [43.286, 16.870]] }
+      - { cls: minor, line: [[42.975, 17.175], [42.838, 17.700]] }
+      - { cls: a,     line: [[42.838, 17.700], [42.700, 17.950], [42.640, 18.108]] }
+
+roadStats:
+  - { cls: a,     label: Coast road (D8),   mi: 160 }
+  - { cls: minor, label: Island / Pelješac, mi: 80 }
+
+finale:
+  from:  [42.640, 18.108]
+  dx:    130
+  label: Dubrovnik · onward → Montenegro ↘

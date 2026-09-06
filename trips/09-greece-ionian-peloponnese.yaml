@@ -1,0 +1,50 @@
+# Greece — Ionian Islands + Peloponnese
+# Base in the Peloponnese, take car ferries out to Zakynthos, Kefalonia, Ithaca, Corfu.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    Ionian Circuit
+subtitle: Peloponnese → Zakynthos → Kefalonia → Corfu · drive-and-sail Greece
+totalMiles: 520
+weatherMonth: May
+
+stays:
+  - { area: Nafplio,    hotel: Amphitryon,        lat: 37.567, lon: 22.808, dates: Day 1 }
+  - { area: Kalamata,   hotel: Elite City Resort, lat: 37.038, lon: 22.114, dates: Day 2 }
+  - { area: Olympia,    hotel: Europa Olympia,    lat: 37.644, lon: 21.630, dates: Day 3 }
+  - { area: Zakynthos,  hotel: Lesante Blu,       lat: 37.788, lon: 20.899, dates: Day 4 }
+  - { area: Kefalonia,  hotel: Emelisse Nature,   lat: 38.245, lon: 20.485, dates: Day 5–6 }
+  - { area: Corfu,      hotel: Corfu Palace,      lat: 39.618, lon: 19.921, dates: Day 7 }
+
+pois:
+  - { name: Palamidi Fortress, lat: 37.564, lon: 22.804 }
+  - { name: Mystras,           lat: 37.075, lon: 22.368 }
+  - { name: Diros Caves,       lat: 36.635, lon: 22.380 }
+  - { name: Ancient Olympia,   lat: 37.638, lon: 21.630 }
+  - { name: Navagio Beach,     lat: 37.859, lon: 20.625 }
+  - { name: Melissani Cave,    lat: 38.259, lon: 20.622 }
+  - { name: Myrtos Beach,      lat: 38.343, lon: 20.535 }
+  - { name: Corfu Old Town,    lat: 39.624, lon: 19.922 }
+
+ferries:
+  - { num: 1, short: Kyllini → Zakynthos, vessel: Levante Ferries, dur: 1h 15m, a: [37.938, 21.145], b: [37.782, 20.900] }
+  - { num: 2, short: Kyllini → Kefalonia, vessel: Levante Ferries, dur: 1h 30m, a: [37.938, 21.145], b: [38.155, 20.588] }
+  - { num: 3, short: Sami → Astakos,      vessel: Ionion Pelagos, dur: 2h 30m, a: [38.253, 20.643], b: [38.533, 21.083] }
+  - { num: 4, short: Igoumenitsa → Corfu, vessel: Kerkyra Lines,  dur: 1h 30m, a: [39.503, 20.263], b: [39.624, 19.922] }
+
+drives:
+  - label: Peloponnese
+    segs:
+      - { cls: motorway, line: [[37.567, 22.808], [37.300, 22.400], [37.038, 22.114]] }
+      - { cls: a,        line: [[37.038, 22.114], [37.400, 21.800], [37.644, 21.630]] }
+  - label: Ionian mainland
+    segs:
+      - { cls: a,        line: [[38.533, 21.083], [39.000, 20.700], [39.503, 20.263]] }
+
+roadStats:
+  - { cls: motorway, label: National road, mi: 300 }
+  - { cls: a,        label: Coast / island, mi: 220 }
+
+finale:
+  from:  [39.618, 19.921]
+  dx:    130
+  label: Corfu · onward → Albania ⛴

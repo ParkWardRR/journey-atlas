@@ -1,0 +1,52 @@
+# Iceland — Snæfellsnes + Westfjords
+# Reykjavík → Snæfellsnes → Baldur ferry across Breiðafjörður → the wild Westfjords.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    Baldur Crossing
+subtitle: Reykjavík → Snæfellsnes → Westfjords · Iceland's quiet corner
+totalMiles: 560
+weatherMonth: July
+
+stays:
+  - { area: Reykjavík,      hotel: Kvosin Downtown,    lat: 64.147, lon: -21.933, dates: Day 1 }
+  - { area: Grundarfjörður, hotel: Kirkjufell Guest,   lat: 64.921, lon: -23.257, dates: Day 2 }
+  - { area: Patreksfjörður, hotel: Fosshotel Westfj.,  lat: 65.593, lon: -23.998, dates: Day 3 }
+  - { area: Ísafjörður,     hotel: Hótel Ísafjörður,   lat: 66.075, lon: -23.135, dates: Day 4–5 }
+  - { area: Hólmavík,       hotel: Hótel Laugarhóll,   lat: 65.706, lon: -21.688, dates: Day 6 }
+
+pois:
+  - { name: Kirkjufell,        lat: 64.927, lon: -23.307 }
+  - { name: Snæfellsjökull,    lat: 64.808, lon: -23.777 }
+  - { name: Rauðisandur,       lat: 65.470, lon: -24.030 }
+  - { name: Látrabjarg Cliffs, lat: 65.503, lon: -24.532 }
+  - { name: Dynjandi Falls,    lat: 65.735, lon: -23.203 }
+  - { name: Drangsnes Hot Pots, lat: 65.687, lon: -21.450 }
+
+ferries:
+  - { num: 1, short: Stykkishólmur → Brjánslækur, vessel: Baldur, size: Breiðafjörður, dur: 2h 30m, a: [65.075, -22.727], b: [65.527, -23.198] }
+
+drives:
+  - label: Snæfellsnes
+    segs:
+      - { cls: a,     line: [[64.147, -21.933], [64.700, -22.400], [64.921, -23.257]] }
+      - { cls: minor, line: [[64.921, -23.257], [64.808, -23.777], [65.075, -22.727]] }
+  - label: Westfjords
+    segs:
+      - { cls: minor, line: [[65.527, -23.198], [65.503, -24.532], [65.593, -23.998]] }
+      - { cls: minor, line: [[65.593, -23.998], [65.735, -23.203], [66.075, -23.135]] }
+      - { cls: a,     line: [[66.075, -23.135], [65.900, -22.100], [65.706, -21.688]] }
+
+roadStats:
+  - { cls: a,     label: Ring road / paved, mi: 240 }
+  - { cls: minor, label: Gravel fjord road, mi: 320 }
+
+note:
+  anchor: [66.35, -22.60]
+  tip:    [66.180, -22.520]
+  title:  Hornstrandir — no roads 🥾
+  sub:    ferry-in hiking only
+
+finale:
+  from:  [65.706, -21.688]
+  dx:    130
+  label: Hólmavík · onward → Ring Road ↘

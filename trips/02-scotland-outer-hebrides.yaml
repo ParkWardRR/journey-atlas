@@ -1,0 +1,55 @@
+# Scotland — Outer Hebrides island-hop + Skye
+# Ullapool → Stornoway, down through Lewis/Harris, the Uists & Barra, back via Oban.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    Hebridean Hop
+subtitle: Ullapool → Lewis → Barra → Oban · Scotland's island chain
+totalMiles: 340
+weatherMonth: June
+
+stays:
+  - { area: Ullapool,   hotel: The Ceilidh Place,   lat: 57.895, lon: -5.160, dates: Day 1 }
+  - { area: Stornoway,  hotel: Cabarfeidh Hotel,    lat: 58.209, lon: -6.389, dates: Day 2 }
+  - { area: Tarbert,    hotel: Harris Hotel,        lat: 57.899, lon: -6.799, dates: Day 3 }
+  - { area: Benbecula,  hotel: Dark Island Hotel,   lat: 57.470, lon: -7.363, dates: Day 4 }
+  - { area: Castlebay,  hotel: Castlebay Hotel,     lat: 56.955, lon: -7.485, dates: Day 5 }
+  - { area: Oban,       hotel: Perle Oban,          lat: 56.415, lon: -5.472, dates: Day 6 }
+
+pois:
+  - { name: Callanish Stones,  lat: 58.198, lon: -6.745 }
+  - { name: Butt of Lewis,     lat: 58.515, lon: -6.257 }
+  - { name: Luskentyre Beach,  lat: 57.885, lon: -6.940 }
+  - { name: Eriskay Beach,     lat: 57.070, lon: -7.300 }
+  - { name: Kisimul Castle,    lat: 56.953, lon: -7.487 }
+  - { name: St Kilda viewpoint, lat: 57.815, lon: -7.230 }
+
+ferries:
+  - { num: 1, short: Ullapool → Stornoway,   vessel: MV Loch Seaforth, dur: 2h 30m, a: [57.895, -5.158], b: [58.207, -6.383] }
+  - { num: 2, short: Leverburgh → Berneray,  vessel: MV Loch Portain,  dur: 1h 00m, a: [57.766, -7.021], b: [57.716, -7.178] }
+  - { num: 3, short: Eriskay → Barra,        vessel: MV Loch Alainn,   dur: 40m,    a: [57.062, -7.301], b: [56.947, -7.398] }
+  - { num: 4, short: Castlebay → Oban,       vessel: MV Isle of Lewis, dur: 4h 45m, a: [56.953, -7.489], b: [56.412, -5.475] }
+
+drives:
+  - label: Lewis & Harris
+    segs:
+      - { cls: a,     line: [[58.207, -6.383], [58.198, -6.745], [58.290, -6.785]] }
+      - { cls: a,     line: [[58.290, -6.785], [58.000, -6.900], [57.885, -6.940], [57.899, -6.799]] }
+  - label: Uists & Barra
+    segs:
+      - { cls: a,     line: [[57.716, -7.178], [57.600, -7.320], [57.470, -7.363]] }
+      - { cls: a,     line: [[57.470, -7.363], [57.300, -7.400], [57.062, -7.301]] }
+
+roadStats:
+  - { cls: a,     label: Single-track A-road, mi: 210 }
+  - { cls: minor, label: Machair / coast,     mi: 130 }
+
+note:
+  anchor: [57.60, -8.10]
+  tip:    [57.815, -7.230]
+  title:  St Kilda — 40 mi out to sea 🌊
+  sub:    boat day-trip only
+
+finale:
+  from:  [56.415, -5.472]
+  dx:    130
+  label: Oban · onward → Glasgow ↗

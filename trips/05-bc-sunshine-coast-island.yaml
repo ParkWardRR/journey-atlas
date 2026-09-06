@@ -1,0 +1,48 @@
+# British Columbia — Sunshine Coast + Vancouver Island Circle
+# Vancouver → Sunshine Coast ferries → Comox → Vancouver Island → Victoria → home.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    Coastal Circle
+subtitle: Vancouver → Sunshine Coast → Vancouver Island · BC by ferry
+totalMiles: 460
+weatherMonth: August
+
+stays:
+  - { area: Vancouver,   hotel: Fairmont Pacific Rim, lat: 49.286, lon: -123.113, dates: Day 1 }
+  - { area: Sechelt,     hotel: Driftwood Inn,        lat: 49.474, lon: -123.755, dates: Day 2 }
+  - { area: Powell River, hotel: Old Courthouse Inn,  lat: 49.835, lon: -124.523, dates: Day 3 }
+  - { area: Comox,       hotel: Old House Hotel,      lat: 49.673, lon: -124.928, dates: Day 4 }
+  - { area: Tofino,      hotel: Wickaninnish Inn,     lat: 49.153, lon: -125.906, dates: Day 5–6 }
+  - { area: Victoria,    hotel: Fairmont Empress,     lat: 48.422, lon: -123.369, dates: Day 7 }
+
+pois:
+  - { name: Skookumchuck Narrows, lat: 49.742, lon: -123.928 }
+  - { name: Cathedral Grove,      lat: 49.286, lon: -124.665 }
+  - { name: Long Beach,           lat: 49.055, lon: -125.770 }
+  - { name: Hot Springs Cove,     lat: 49.365, lon: -126.263 }
+  - { name: Butchart Gardens,     lat: 48.564, lon: -123.470 }
+  - { name: Chemainus Murals,     lat: 48.925, lon: -123.720 }
+
+ferries:
+  - { num: 1, short: Horseshoe Bay → Langdale, vessel: BC Ferries, dur: 40m,    a: [49.375, -123.272], b: [49.435, -123.478] }
+  - { num: 2, short: Earls Cove → Saltery Bay,  vessel: BC Ferries, dur: 50m,    a: [49.752, -124.000], b: [49.780, -124.180] }
+  - { num: 3, short: Powell River → Comox,      vessel: BC Ferries, dur: 1h 20m, a: [49.835, -124.560], b: [49.673, -124.930] }
+  - { num: 4, short: Nanaimo → Horseshoe Bay,   vessel: BC Ferries, dur: 1h 40m, a: [49.194, -123.955], b: [49.375, -123.272] }
+
+drives:
+  - label: Sunshine Coast
+    segs:
+      - { cls: a, line: [[49.435, -123.478], [49.474, -123.755], [49.742, -123.928], [49.780, -124.180]] }
+  - label: Vancouver Island
+    segs:
+      - { cls: a,        line: [[49.673, -124.930], [49.286, -124.665], [49.153, -125.906]] }
+      - { cls: motorway, line: [[49.153, -125.906], [49.194, -123.955], [48.925, -123.720], [48.422, -123.369]] }
+
+roadStats:
+  - { cls: motorway, label: Island Highway, mi: 250 }
+  - { cls: a,        label: Coast road,     mi: 210 }
+
+finale:
+  from:  [48.422, -123.369]
+  dx:    130
+  label: Victoria · onward → Seattle ⛴

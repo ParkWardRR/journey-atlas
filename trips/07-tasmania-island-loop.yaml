@@ -1,0 +1,47 @@
+# Tasmania — Spirit of Tasmania + Full Island Loop
+# Melbourne → overnight vehicle ferry → Devonport → a full lap of Tasmania.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    Spirit of Tasmania
+subtitle: Melbourne → Devonport → the whole island · overnight sail + loop
+totalMiles: 780
+weatherMonth: February
+
+stays:
+  - { area: Melbourne,      hotel: The Hotel Windsor,   lat: -37.811, lon: 144.973, dates: Day 1 }
+  - { area: Devonport,      hotel: Gateway Hotel,       lat: -41.178, lon: 146.351, dates: Day 2 }
+  - { area: Cradle Mountain, hotel: Peppers Lodge,      lat: -41.583, lon: 145.940, dates: Day 3 }
+  - { area: Strahan,        hotel: Strahan Village,     lat: -42.153, lon: 145.328, dates: Day 4 }
+  - { area: Hobart,         hotel: MACq 01,             lat: -42.882, lon: 147.332, dates: Day 5–6 }
+  - { area: Bay of Fires,   hotel: Bay of Fires Lodge,  lat: -41.180, lon: 148.290, dates: Day 7 }
+
+pois:
+  - { name: Cradle Mountain, lat: -41.685, lon: 145.951 }
+  - { name: Gordon River,    lat: -42.360, lon: 145.720 }
+  - { name: MONA,            lat: -42.815, lon: 147.257 }
+  - { name: Port Arthur,     lat: -43.144, lon: 147.851 }
+  - { name: Wineglass Bay,   lat: -42.155, lon: 148.300 }
+  - { name: Bay of Fires,    lat: -41.100, lon: 148.230 }
+  - { name: The Tarkine,     lat: -41.400, lon: 145.150 }
+
+ferries:
+  - { num: 1, short: Geelong → Devonport, vessel: Spirit of Tasmania, size: Bass Strait, dur: 10h (overnight), a: [-38.140, 144.360], b: [-41.170, 146.355] }
+
+drives:
+  - label: West & south
+    segs:
+      - { cls: a,     line: [[-41.170, 146.355], [-41.583, 145.940], [-42.153, 145.328]] }
+      - { cls: a,     line: [[-42.153, 145.328], [-42.600, 146.500], [-42.882, 147.332]] }
+      - { cls: minor, line: [[-42.882, 147.332], [-43.144, 147.851]] }
+  - label: East coast
+    segs:
+      - { cls: a,     line: [[-42.882, 147.332], [-42.155, 148.300], [-41.180, 148.290]] }
+
+roadStats:
+  - { cls: a,     label: Highway,        mi: 560 }
+  - { cls: minor, label: Wilderness road, mi: 220 }
+
+finale:
+  from:  [-41.180, 148.290]
+  dx:    120
+  label: Bay of Fires · onward → Launceston ↖

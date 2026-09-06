@@ -1,0 +1,49 @@
+# Patagonia — Strait of Magellan to Tierra del Fuego
+# Punta Arenas → vehicle ferry across the Strait of Magellan → the end of Route 3, Ushuaia.
+# Starter data — refine coordinates/route and run fetch-weather before rendering.
+
+title:    End of Route 3
+subtitle: Punta Arenas → Strait of Magellan → Ushuaia · to the edge of the world
+totalMiles: 380
+weatherMonth: January
+
+stays:
+  - { area: Punta Arenas, hotel: Hotel Cabo de Hornos, lat: -53.163, lon: -70.908, dates: Day 1 }
+  - { area: Río Grande,   hotel: Hotel Status,         lat: -53.787, lon: -67.710, dates: Day 2 }
+  - { area: Tolhuin,      hotel: Hostería Kaikén,      lat: -54.508, lon: -67.190, dates: Day 3 }
+  - { area: Ushuaia,      hotel: Arakur Resort,        lat: -54.807, lon: -68.313, dates: Day 4–5 }
+
+pois:
+  - { name: Seno Otway Penguins, lat: -52.960, lon: -71.180 }
+  - { name: Strait of Magellan,  lat: -52.500, lon: -69.550 }
+  - { name: Lago Fagnano,        lat: -54.560, lon: -67.750 }
+  - { name: Garibaldi Pass,      lat: -54.630, lon: -67.870 }
+  - { name: Tierra del Fuego NP, lat: -54.840, lon: -68.570 }
+  - { name: Lapataia Bay,        lat: -54.855, lon: -68.590 }
+
+ferries:
+  - { num: 1, short: Punta Delgada → Bahía Azul, vessel: TABSA, size: Primera Angostura, dur: 30m, a: [-52.470, -69.560], b: [-52.560, -69.590] }
+
+drives:
+  - label: Down Route 3
+    segs:
+      - { cls: a,     line: [[-53.163, -70.908], [-52.900, -70.400], [-52.470, -69.560]] }
+      - { cls: a,     line: [[-52.560, -69.590], [-53.300, -68.500], [-53.787, -67.710]] }
+      - { cls: a,     line: [[-53.787, -67.710], [-54.508, -67.190]] }
+      - { cls: minor, line: [[-54.508, -67.190], [-54.630, -67.870], [-54.807, -68.313]] }
+      - { cls: minor, line: [[-54.807, -68.313], [-54.855, -68.590]] }
+
+roadStats:
+  - { cls: a,     label: Ruta 3 (paved), mi: 320 }
+  - { cls: minor, label: Mountain / park, mi: 60 }
+
+note:
+  anchor: [-53.90, -71.20]
+  tip:    [-52.500, -69.550]
+  title:  Cross-border rental? 🛂
+  sub:    needs written permission
+
+finale:
+  from:  [-54.855, -68.590]
+  dx:    120
+  label: Lapataia · the end of the road 🏁
