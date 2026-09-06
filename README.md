@@ -97,9 +97,14 @@ header. The choice is remembered (localStorage) and defaults to your system ligh
 Each theme also sets a sensible default **basemap** and **road palette**, both overridable from the
 dropdowns beside it (Night applies a dark-map tile filter over any basemap).
 
-It's a static build — `npm run build` prerenders `/` **and** `/trip` into `build/` with
+**`/gallery`** is the index of every route in [`trips/`](trips/) — a themed card grid with each
+trip's rendered map thumbnail (the committed `docs/trips/*.png` from `npm run render:all`), its
+distance and stay / ferry / sight counts, linking to the full-size map. `npm run build:index`
+regenerates `src/lib/trips-index.json` (it also runs automatically before every build).
+
+It's a static build — `npm run build` prerenders `/`, `/trip` **and** `/gallery` into `build/` with
 `@sveltejs/adapter-static`, so the whole thing hosts as plain files with no server. Swap
-`trips/*.yaml`, rebuild, and both the poster and the web page update from the same data.
+`trips/*.yaml`, rebuild, and the poster, the trip page and the gallery all update from the same data.
 
 ## Authoring a trip
 
