@@ -191,6 +191,19 @@ node scripts/verify-gps.mjs data/example-gps.csv
 
 The CSV just needs `latitude` and `longitude` columns.
 
+**GPX / KML import** — turn a recorded track into a paste-ready `drives[]` fragment instead of
+hand-typing coordinate polylines. The track is simplified (Douglas–Peucker) to a sane number of
+points, the length becomes `totalMiles`, and any waypoints become `pois[]`:
+
+```bash
+npm run gpx -- data/example-track.gpx --cls b       # → YAML fragment on stdout
+npm run gpx -- track.kml --tol 120 --json           # coarser, as JSON
+```
+
+GPX carries no road class, so the whole leg gets one `--cls` (default `minor`) — split it into
+`segs` by hand where the road actually changes. Paste the fragment into your trip, then
+`npm run doctor` and `npm run build:trip`.
+
 ## Basemaps
 
 `?style=` picks the tiles. All work with **no API key** except the four Stadia styles.
