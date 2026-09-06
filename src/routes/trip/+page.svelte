@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import '$lib/themes.css';
   import data from '$lib/journey.json';
   import AtlasMap from '$lib/AtlasMap.svelte';
@@ -10,15 +11,31 @@
 
   const STORAGE_KEY = 'atlas-theme';
 
-  let theme = $state('light');
+  // The inline script in app.html already set <html data-theme> from storage /
+  // system preference before paint — start from that so there's no flash.
+  const initialTheme = () => {
+    if (!browser) return 'light';
+    const attr = document.documentElement.getAttribute('data-theme');
+    return THEME_BY_ID[attr] ? attr : 'light';
+  };
+
+  let theme = $state(initialTheme());
   let style = $state('topo');
   let palette = $state('cobalt');
   let ready = $state(false); // gate the map until we know the container has a size
+
+  // Keep <html data-theme> in sync when the theme changes at runtime.
+  $effect(() => {
+    if (browser) document.documentElement.setAttribute('data-theme', theme);
+  });
 
   const dark = $derived(theme === 'night');
   const resolvedStyle = $derived(resolveStyle(style));
   const mapCredit = $derived(TILES[resolvedStyle]?.label ?? 'Esri World Topo');
   const usingFallback = $derived(!!STADIA_FALLBACK[style] && !HAS_STADIA_KEY);
+  // Basemap label, flagging Stadia styles that will fall back without a key.
+  const basemapLabel = (b) =>
+    TILES[b].label + (STADIA_FALLBACK[b] && !HAS_STADIA_KEY ? ' — needs key' : '');
 
   // ── derived trip stats ───────────────────────────────────────
   const roadLabels = { motorway: 'Motorway', a: 'A-road', b: 'B-road', minor: 'Single-track / minor' };
@@ -41,13 +58,9 @@
   }
 
   onMount(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && THEME_BY_ID[saved]) {
-      applyTheme(saved);
-    } else {
-      const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-      applyTheme(prefersDark ? 'night' : 'light');
-    }
+    // theme is already resolved (app.html + initialTheme); set this theme's
+    // default basemap + palette and persist the choice, then reveal the map.
+    applyTheme(theme);
     ready = true;
   });
 </script>
@@ -57,7 +70,7 @@
   {#if data.subtitle}<meta name="description" content={data.subtitle} />{/if}
 </svelte:head>
 
-<div class="page" data-theme={theme} style="background:var(--bg-grad);">
+<div class="page" style="background:var(--bg-grad);">
   <header class="hero">
     <div class="hero-inner">
       <div class="hero-lead">
@@ -86,7 +99,7 @@
             <span>Basemap</span>
             <select bind:value={style}>
               {#each BASEMAP_OPTIONS as b}
-                <option value={b}>{TILES[b].label}</option>
+                <option value={b}>{basemapLabel(b)}</option>
               {/each}
             </select>
           </label>
@@ -204,7 +217,7 @@
             <div class="road-row">
               <span class="road-label">{r.label ?? roadLabels[r.cls] ?? r.cls}</span>
               <span class="road-bar">
-                <span class="road-fill" style="width:{(r.mi / maxRoadMi) * 100}%;background:{PALETTES[palette][r.cls]}"></span>
+                <span class="road-fill" style="width:{(r.mi / maxRoadMi) * 100}%;background:{PALETTES[palette][r.cls] ?? 'var(--text-muted)'}"></span>
               </span>
               <span class="road-mi">{r.mi} mi</span>
             </div>

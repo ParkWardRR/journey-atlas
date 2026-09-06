@@ -4,6 +4,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:," />
+    <script>
+      // Apply the saved / system theme before first paint, so a night-mode
+      // visitor never sees a flash of the light theme during hydration.
+      (function () {
+        try {
+          var valid = ['light', 'night', 'vintage', 'minimal'];
+          var saved = localStorage.getItem('atlas-theme');
+          var t = valid.indexOf(saved) >= 0 ? saved
+            : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'light');
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <style>html, body { margin: 0; min-height: 100%; }</style>
     %sveltekit.head%
   </head>
   <body>
