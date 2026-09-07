@@ -16,8 +16,9 @@ forward are welcome; grab one and open an issue to claim it.
   [`schema/journey.schema.json`](schema/journey.schema.json) into `src/lib/journey.json`;
   `render.mjs` drives headless Chromium and screenshots the fixed 1600×1200 `#journey-card`.
 - **15 basemaps, 4 road palettes,** with graceful Stadia-key fallback to keyless look-alikes.
-- **Native Go CLI** ([`cli-go/`](cli-go/)) — `validate`, `doctor`, and `build`, the last
-  **byte-for-byte identical** to `build-trip.mjs`. A browser-free companion for the pure commands.
+- **Native CLIs**, each **byte-for-byte identical** to the Node script it mirrors:
+  [`cli-go/`](cli-go/) (**Go**) does `validate` · `doctor` · `build`; [`cli-zig/`](cli-zig/)
+  (**Zig 0.16**) does `verify-gps`. Zero-dependency companions for the browser-free commands.
 
 **Rendering & authoring tooling**
 - **Multi-trip render, no collisions** — `npm run render:all` builds + renders every `trips/*.yaml`
@@ -59,8 +60,9 @@ forward are welcome; grab one and open an issue to claim it.
   poster PNG" button that reuses the render path.
 - **Weather, wired in.** Let `build-trip` optionally call `fetch-weather` and populate
   `weather[]` from `stays[]` dates + coordinates automatically (same pattern as elevation).
-- **Finish the Go CLI.** Port `gpx-import` and `fetch-elevation` so the native binary matches
-  the Node scripts end-to-end.
+- **Round out the native CLIs.** The Go binary still lacks `verify-gps` (now in Zig) and neither
+  covers `gpx-import`; port the remaining pure scripts so a single native toolchain matches Node
+  end-to-end, and add a CI job that builds the Zig binary + checks parity.
 - **Accessibility pass.** Keyboard-navigable map controls, focus states, alt text,
   reduced-motion, and a WCAG-AA contrast check across all four themes.
 
