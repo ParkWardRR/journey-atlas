@@ -21,6 +21,23 @@
   const STADIA_FALLBACK = { watercolor: 'opentopo', stamen: 'opentopo', outdoors: 'opentopo', smooth: 'gray' };
   let pal = PALETTES.cobalt;
   let mapCredit = 'Esri World Topo';
+
+  // compact elevation profile for the legend card (built once; data is static)
+  const EW = 300, EH = 34;
+  const elev = (data.elevation ?? []).filter((d) => Number.isFinite(d.mi) && Number.isFinite(d.m));
+  let elevArea = '', elevLine = '', elevPeak = 0, elevClimb = 0;
+  if (elev.length >= 2) {
+    const maxMi = Math.max(...elev.map((d) => d.mi));
+    const minM = Math.min(...elev.map((d) => d.m)), maxM = Math.max(...elev.map((d) => d.m));
+    const yMin = minM > 40 ? minM - 15 : Math.min(0, minM);
+    const yMax = maxM + Math.max(15, (maxM - yMin) * 0.08);
+    const X = (mi) => (mi / maxMi) * EW;
+    const Y = (m) => EH - ((m - yMin) / (yMax - yMin || 1)) * EH;
+    elevLine = elev.map((d, i) => `${i ? 'L' : 'M'}${X(d.mi).toFixed(1)},${Y(d.m).toFixed(1)}`).join(' ');
+    elevArea = `M0,${EH} ` + elev.map((d) => `L${X(d.mi).toFixed(1)},${Y(d.m).toFixed(1)}`).join(' ') + ` L${EW},${EH} Z`;
+    elevPeak = maxM;
+    elevClimb = elev.reduce((g, d, i) => g + (i ? Math.max(0, d.m - elev[i - 1].m) : 0), 0);
+  }
   onMount(() => {
     const p = new URLSearchParams(location.search);
     pal = PALETTES[p.get('roads')] || PALETTES.cobalt;
@@ -85,6 +102,15 @@
           </div>
         {/each}
       </div>
+      {#if elevLine}
+        <div class="elev-strip">
+          <svg class="elev-mini" viewBox="0 0 {EW} {EH}" preserveAspectRatio="none">
+            <path class="ea" d={elevArea} />
+            <path class="el" d={elevLine} />
+          </svg>
+          <div class="elev-meta"><b>Elevation</b> &#9650; {elevPeak.toLocaleString()} m &middot; &uarr; {Math.round(elevClimb).toLocaleString()} m climb</div>
+        </div>
+      {/if}
     </div>
 
     <!-- tiny map credit -->
@@ -141,6 +167,12 @@
   .rl.minor { height: 2.5px; }
   .rlbl { font-size: 15px; font-weight: 600; color: #4a473e; }
   .rmi { font-size: 15px; font-weight: 700; color: #2a2722; margin-left: auto; padding-left: 16px; white-space: nowrap; }
+  .elev-strip { margin-top: 9px; padding-top: 8px; border-top: 1px solid #ece7dd; }
+  .elev-mini { display: block; width: 100%; height: 34px; }
+  .elev-mini .ea { fill: rgba(14, 148, 136, 0.18); }
+  .elev-mini .el { fill: none; stroke: #0e9488; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .elev-meta { margin-top: 5px; font-size: 11.5px; font-weight: 600; color: #6a655a; }
+  .elev-meta b { color: #2a2722; font-weight: 700; }
 
   .map-credit {
     position: absolute; z-index: 500; left: 44px; bottom: 14px;
