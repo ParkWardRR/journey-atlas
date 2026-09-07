@@ -18,6 +18,9 @@ jobs:
       # deno lint over the script pipeline (built-in, no extra deps).
       - name: Lint scripts
         run: deno lint
+      # Unit tests for the pure geo + build/validate helpers.
+      - name: Unit tests
+        run: deno task test
       # Every trip must compile against schema/journey.schema.json …
       - name: Schema-validate every trip
         run: |

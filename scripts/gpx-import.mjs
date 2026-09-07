@@ -13,6 +13,7 @@
 
 import { readFileSync } from 'node:fs';
 import { Document, visit, isScalar } from 'yaml';
+import { haversineMeters, simplify } from './lib/geo.mjs';
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith('--'));
@@ -90,46 +91,7 @@ if (track.length < 2) {
 
 // ---- distance + simplify --------------------------------------------------
 
-const R = 6371000; // metres
-const km = (a, b) => {
-  const dLat = (b[0] - a[0]) * Math.PI / 180, dLon = (b[1] - a[1]) * Math.PI / 180;
-  const la1 = a[0] * Math.PI / 180, la2 = b[0] * Math.PI / 180;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h)); // metres
-};
-
-// planar metres relative to a reference lat, for perpendicular distance
-const proj = (p, lat0) => [p[1] * 111320 * Math.cos(lat0 * Math.PI / 180), p[0] * 111320];
-function perpDist(p, a, b, lat0) {
-  const P = proj(p, lat0), A = proj(a, lat0), B = proj(b, lat0);
-  const dx = B[0] - A[0], dy = B[1] - A[1];
-  const len2 = dx * dx + dy * dy;
-  if (len2 === 0) return Math.hypot(P[0] - A[0], P[1] - A[1]);
-  let t = ((P[0] - A[0]) * dx + (P[1] - A[1]) * dy) / len2;
-  t = Math.max(0, Math.min(1, t));
-  return Math.hypot(P[0] - (A[0] + t * dx), P[1] - (A[1] + t * dy));
-}
-
-// Douglas–Peucker (iterative) with a metres tolerance
-function simplify(points, tol) {
-  if (points.length < 3) return points;
-  const lat0 = points[0][0];
-  const keep = new Array(points.length).fill(false);
-  keep[0] = keep[points.length - 1] = true;
-  const stack = [[0, points.length - 1]];
-  while (stack.length) {
-    const [lo, hi] = stack.pop();
-    let maxD = 0, idx = -1;
-    for (let i = lo + 1; i < hi; i++) {
-      const d = perpDist(points[i], points[lo], points[hi], lat0);
-      if (d > maxD) { maxD = d; idx = i; }
-    }
-    if (maxD > tol && idx !== -1) { keep[idx] = true; stack.push([lo, idx], [idx, hi]); }
-  }
-  return points.filter((_, i) => keep[i]);
-}
-
-const totalMetres = track.reduce((s, p, i) => (i ? s + km(track[i - 1], p) : 0), 0);
+const totalMetres = track.reduce((s, p, i) => (i ? s + haversineMeters(track[i - 1], p) : 0), 0);
 const miles = Math.round(totalMetres / 1609.344);
 const simplified = simplify(track, tolM).map(([la, lo]) => [round6(la), round6(lo)]);
 

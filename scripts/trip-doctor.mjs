@@ -10,15 +10,9 @@
 // Exit code: 0 if every file is clean or warn-only, 1 if any ERROR is found.
 
 import { readTrip, validateTrip } from './lib/build.mjs';
+import { haversineKm as km, median } from './lib/geo.mjs';
 
 const CANVAS_W = 1600, CANVAS_H = 1200;
-
-const km = (a, b) => {
-  const R = 6371, dLat = (b[0] - a[0]) * Math.PI / 180, dLon = (b[1] - a[1]) * Math.PI / 180;
-  const la1 = a[0] * Math.PI / 180, la2 = b[0] * Math.PI / 180;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
-};
 
 // Collect every [lat,lon] in the trip with a human label, for range/outlier checks.
 function allPoints(t) {
@@ -30,12 +24,6 @@ function allPoints(t) {
     (s.line || []).forEach((pt, k) => pts.push([`drives[${i}].segs[${j}].line[${k}]`, pt]))));
   (t.insets || []).forEach((n, i) => pts.push([`insets[${i}] ${n.title}`, n.center]));
   return pts.filter(([, c]) => Array.isArray(c) && c.length === 2 && c.every(Number.isFinite));
-}
-
-function median(nums) {
-  const s = [...nums].sort((a, b) => a - b);
-  const m = Math.floor(s.length / 2);
-  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 }
 
 function lint(src) {

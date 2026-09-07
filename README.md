@@ -85,6 +85,10 @@ deno task render:all            # build + render EVERY trips/*.yaml → output/s
 > gets read-only access, `weather`/`elevation` may only reach the Open-Meteo hosts. `npm run
 > <task>` still works too; the npm scripts just delegate to `deno task`.
 
+Dev checks: `deno task test` runs the unit suite (great-circle/polyline maths + schema
+validation), `deno task lint` runs `deno lint`, and `deno task check` does lint + test + build —
+the same gate CI enforces.
+
 Poster query params: `?style=<basemap>&roads=<palette>&blowups=1`.
 
 ## Interactive web UI & themes

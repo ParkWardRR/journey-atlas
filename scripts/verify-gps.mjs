@@ -9,6 +9,7 @@
 // OK / ~near / NO-GPS verdict, so you can drop or relocate anything unbacked.
 
 import { readFileSync } from 'node:fs';
+import { haversineKm as km } from './lib/geo.mjs';
 
 const csvFile = process.argv[2];
 const OKKM = Number(process.argv[3] || 3);
@@ -29,13 +30,6 @@ function parseCsv(txt) {
   }
   return pts;
 }
-
-const km = (a, b) => {
-  const R = 6371, dLat = (b[0] - a[0]) * Math.PI / 180, dLon = (b[1] - a[1]) * Math.PI / 180;
-  const la1 = a[0] * Math.PI / 180, la2 = b[0] * Math.PI / 180;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
-};
 
 const track = parseCsv(readFileSync(csvFile, 'utf8'));
 const nearest = (p) => track.reduce((m, g) => Math.min(m, km(p, g)), Infinity);

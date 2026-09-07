@@ -10,6 +10,7 @@
 // and prints `elevation: [{ mi, m }]` (cumulative miles + metres). One HTTP call.
 
 import { readTrip } from './lib/build.mjs';
+import { haversineMeters as metres } from './lib/geo.mjs';
 
 const args = process.argv.slice(2);
 const src = args.find((a) => !a.startsWith('--')) || 'trips/adriatic-crossing.yaml';
@@ -35,14 +36,6 @@ if (route.length < 2) {
   console.error(`✗ ${src}: need at least 2 drive coordinates to profile (found ${route.length})`);
   process.exit(1);
 }
-
-const R = 6371000; // metres
-const metres = (a, b) => {
-  const dLat = (b[0] - a[0]) * Math.PI / 180, dLon = (b[1] - a[1]) * Math.PI / 180;
-  const la1 = a[0] * Math.PI / 180, la2 = b[0] * Math.PI / 180;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
-};
 
 // cumulative distance (metres) at each vertex
 const cum = [0];

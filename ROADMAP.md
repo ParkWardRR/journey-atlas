@@ -22,6 +22,9 @@ forward are welcome; grab one and open an issue to claim it.
 - **Deno 2 toolchain.** The whole script pipeline runs on **Deno 2** — tasks in `deno.json`
   with **least-privilege permissions**, built-in `deno lint`, one `deno.lock`, and no Node/npm
   install step (npm deps are resolved on demand). CI runs on `denoland/setup-deno`.
+- **Unit tests** (`deno task test`) — the shared great-circle/polyline maths (`scripts/lib/geo.mjs`,
+  deduped from four scripts) and the schema compile/validate helpers, covered by `deno test`
+  and gated in CI.
 
 **Rendering & authoring tooling**
 - **Multi-trip render, no collisions** — `deno task render:all` builds + renders every `trips/*.yaml`

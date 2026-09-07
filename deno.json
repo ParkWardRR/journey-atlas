@@ -19,7 +19,8 @@
     "render": "deno run -A scripts/render.mjs",
     "render:all": "deno run -A scripts/render-all.mjs",
 
-    "check": "deno lint && deno task build",
+    "test": "deno test --allow-read --allow-write --allow-env scripts/",
+    "check": "deno lint && deno task test && deno task build",
     "fmt": "deno fmt",
     "lint": "deno lint"
   },
