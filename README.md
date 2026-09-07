@@ -26,8 +26,8 @@
   <img alt="Made with" src="https://img.shields.io/badge/made%20with-☕%20%2B%20🗺️-fef3c7">
 </p>
 
-<p align="center"><img src="docs/hero-stamen.png" alt="Adriatic Crossing — Stamen Terrain" width="100%"></p>
-<p align="center"><sub>Above: the bundled fictional example on <b>Stamen Terrain</b> (a Stadia Maps basemap — <a href="#basemaps">free key, optional</a>).</sub></p>
+<p align="center"><img src="docs/hero-demo.gif" alt="Adriatic Crossing rendered across five basemaps" width="100%"></p>
+<p align="center"><sub>Above: the bundled fictional example, one trip file rendered across <b>five basemaps</b> — Stamen Terrain · Watercolor · National Geographic · OpenTopoMap · Esri Ocean. Generated with <code>scripts/make-hero-gif.sh</code> (reproducible in a container: <code>scripts/container-demo.sh</code>).</sub></p>
 
 ---
 

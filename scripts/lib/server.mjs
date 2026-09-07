@@ -32,8 +32,11 @@ export async function ensureServer(url, { timeoutMs = 60000 } = {}) {
   }
 
   console.log('• no server up — starting `vite dev`…');
-  const port = new URL(url).port || '5173';
-  const child = spawn('npx', ['vite', 'dev', '--port', port, '--strictPort'], {
+  const { port = '5173', hostname } = new URL(url);
+  // Bind Vite to the exact host we probe. Without this, Node's fetch may resolve
+  // "localhost" to ::1 while Vite listens on 127.0.0.1 (or vice-versa) and the
+  // reachability check times out — e.g. inside a container on Node 18+.
+  const child = spawn('npx', ['vite', 'dev', '--host', hostname, '--port', port, '--strictPort'], {
     stdio: ['ignore', 'ignore', 'inherit'],
     detached: false,
   });
