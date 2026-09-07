@@ -301,8 +301,8 @@ browser-free pipeline **without Deno or Go**. Grab a tarball from the
 [Releases](https://github.com/ParkWardRR/journey-atlas/releases) page:
 
 ```bash
-# e.g. macOS arm64
-curl -fsSL https://github.com/ParkWardRR/journey-atlas/releases/latest/download/journey-atlas_*_darwin_arm64.tar.gz | tar -xz
+# e.g. macOS arm64 (swap the version/os/arch for yours; see the Releases page)
+curl -fsSL https://github.com/ParkWardRR/journey-atlas/releases/download/v0.1.0/journey-atlas_0.1.0_darwin_arm64.tar.gz | tar -xz
 ./journey-atlas doctor trips/*.yaml
 ```
 

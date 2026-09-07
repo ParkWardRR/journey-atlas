@@ -32,9 +32,11 @@ forward are welcome; grab one and open an issue to claim it.
   `doctor`, `build`, `verify-gps`, `correlate` and `gpx-import` — each **byte-for-byte identical**
   to its Deno script (UTF-16-aware padding, `[ lat, lon ]` flow-YAML), all diffed in CI. Only
   the browser/network scripts stay Deno-only.
-- **Single distributable binary.** [goreleaser](cli-go/.goreleaser.yaml) builds `journey-atlas`
-  for macOS + Linux (amd64/arm64); a self-hosted **Release** workflow runs it in OrbStack on a
-  `vX.Y.Z` tag, so you can run the browser-free pipeline with no Deno/Go at all.
+- **Single distributable binary — shipped as `v0.1.0`.** [goreleaser](cli-go/.goreleaser.yaml)
+  builds `journey-atlas` for macOS + Linux (amd64/arm64); a self-hosted **Release** workflow runs
+  it in OrbStack on a `vX.Y.Z` tag. The first
+  [release](https://github.com/ParkWardRR/journey-atlas/releases/tag/v0.1.0) ships all four
+  binaries + checksums, so you can run the browser-free pipeline with no Deno/Go at all.
 - **Unit tests** (`deno task test`) — the shared great-circle/polyline maths (`scripts/lib/geo.mjs`,
   deduped from four scripts) and the schema compile/validate helpers, covered by `deno test`
   and gated in CI.
@@ -84,8 +86,8 @@ forward are welcome; grab one and open an issue to claim it.
 - **Fold `weather`/`elevation` into `build`.** Let `build-trip` optionally fetch + populate
   `weather[]`/`elevation[]` from `stays[]` dates + coordinates (the last two scripts that can't
   go native, since they need the network).
-- **Cut the first tagged release.** The Release workflow is wired; push a `v0.1.0` tag to
-  publish the first native-CLI binaries, then link them from the README.
+- **Homebrew tap / `go install`.** Now that `v0.1.0` ships binaries, add a goreleaser `brews:`
+  block (a `homebrew-tap` repo) and document `go install`, so the CLI is one command to get.
 - **Accessibility pass.** Keyboard-navigable map controls, focus states, alt text,
   reduced-motion, and a WCAG-AA contrast check across all four themes.
 
