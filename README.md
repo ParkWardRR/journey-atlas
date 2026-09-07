@@ -295,6 +295,20 @@ cd cli-go  && go build -o journey-atlas . && ./journey-atlas correlate ../data/e
 cd cli-zig && zig build && ./zig-out/bin/journey-atlas-verify ../data/example-gps.csv
 ```
 
+**Install a prebuilt binary** — the Go CLI ships as a single per-arch binary (macOS + Linux,
+amd64/arm64) built by [goreleaser](cli-go/.goreleaser.yaml), so you can run the whole
+browser-free pipeline **without Deno or Go**. Grab a tarball from the
+[Releases](https://github.com/ParkWardRR/journey-atlas/releases) page:
+
+```bash
+# e.g. macOS arm64
+curl -fsSL https://github.com/ParkWardRR/journey-atlas/releases/latest/download/journey-atlas_*_darwin_arm64.tar.gz | tar -xz
+./journey-atlas doctor trips/*.yaml
+```
+
+Releases are cut from a `vX.Y.Z` tag by the self-hosted **Release** workflow (goreleaser in
+OrbStack on the mini — see [CI/CD](#cicd--self-hosted-on-a-mac-mini-orbstack)).
+
 Only what genuinely needs a browser or the network stays Deno-only: `render`/`render:all`
 (Playwright) and `weather`/`elevation` (HTTP).
 

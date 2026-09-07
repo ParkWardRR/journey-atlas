@@ -3,9 +3,11 @@
 # GitHub-hosted runners. Builds the reproducible ci/Dockerfile image once and
 # runs the pipeline inside it against the checked-out tree (bind-mounted).
 #
-#   ci/orb-ci.sh check   # deno lint + unit tests + static build + Go byte-parity
-#   ci/orb-ci.sh gif     # regenerate docs/hero-demo.gif (Zig verify + render)
-#   ci/orb-ci.sh all     # check, then gif   (default)
+#   ci/orb-ci.sh check     # deno lint + unit tests + static build + Go byte-parity
+#   ci/orb-ci.sh gif       # regenerate docs/hero-demo.gif (Zig verify + render)
+#   ci/orb-ci.sh snapshot  # goreleaser multi-arch build of the Go CLI (no publish)
+#   ci/orb-ci.sh release   # goreleaser release from a vX.Y.Z tag (needs GITHUB_TOKEN)
+#   ci/orb-ci.sh all       # check, then gif   (default)
 #
 # Requires OrbStack (its `docker`) on PATH. Everything else lives in the image.
 set -euo pipefail
@@ -75,9 +77,21 @@ gif() {
   echo "✓ docs/hero-demo.gif updated"
 }
 
+GORELEASER_IMAGE="${GORELEASER_IMAGE:-goreleaser/goreleaser:latest}"
+
+# goreleaser runs against the Go module in cli-go/. The whole repo is mounted so
+# it can read .git (tags/version); workdir is the module dir.
+goreleaser() {
+  echo "▸ $1 — goreleaser ($2) via OrbStack"
+  docker run --rm -v "$PWD":/w -w /w/cli-go \
+    ${GITHUB_TOKEN:+-e GITHUB_TOKEN} "$GORELEASER_IMAGE" $2
+}
+
 case "$STAGE" in
-  check) check ;;
-  gif)   gif ;;
-  all)   check; gif ;;
-  *) echo "usage: ci/orb-ci.sh [check|gif|all]" >&2; exit 1 ;;
+  check)    check ;;
+  gif)      gif ;;
+  snapshot) goreleaser snapshot "build --snapshot --clean"; ls -1 cli-go/dist/*/journey-atlas 2>/dev/null ;;
+  release)  : "${GITHUB_TOKEN:?set GITHUB_TOKEN to publish a release}"; goreleaser release "release --clean" ;;
+  all)      check; gif ;;
+  *) echo "usage: ci/orb-ci.sh [check|gif|snapshot|release|all]" >&2; exit 1 ;;
 esac

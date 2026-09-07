@@ -15,7 +15,8 @@ import (
 	"os"
 )
 
-const version = "0.1.0-prototype"
+// version is overridden at release time via -ldflags "-X main.version=…" (goreleaser).
+var version = "dev"
 
 func main() {
 	if len(os.Args) < 2 {

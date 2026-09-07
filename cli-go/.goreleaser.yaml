@@ -1,0 +1,55 @@
+# Build the journey-atlas native CLI for macOS + Linux (amd64/arm64) as a single
+# distributable binary, so contributors don't need Deno for the browser-free
+# commands (validate/doctor/build/verify-gps/correlate/gpx).
+#
+#   goreleaser build   --snapshot --clean   # local multi-arch build, no publish
+#   goreleaser release --clean              # on a vX.Y.Z tag → GitHub Release
+#
+# Runs from this directory (the Go module root) — see ci/orb-ci.sh.
+version: 2
+
+project_name: journey-atlas
+
+builds:
+  - id: journey-atlas
+    main: .
+    binary: journey-atlas
+    env:
+      - CGO_ENABLED=0
+    goos: [darwin, linux]
+    goarch: [amd64, arm64]
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    name_template: "journey-atlas_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-snapshot-{{ .ShortCommit }}"
+
+changelog:
+  use: git
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  github:
+    owner: ParkWardRR
+    name: journey-atlas
+  name_template: "journey-atlas CLI {{ .Tag }}"
+  header: |
+    Native `journey-atlas` CLI — the browser-free pipeline (validate · doctor ·
+    build · verify-gps · correlate · gpx), byte-for-byte identical to the Deno
+    scripts. No Deno/Node required.

@@ -32,6 +32,9 @@ forward are welcome; grab one and open an issue to claim it.
   `doctor`, `build`, `verify-gps`, `correlate` and `gpx-import` — each **byte-for-byte identical**
   to its Deno script (UTF-16-aware padding, `[ lat, lon ]` flow-YAML), all diffed in CI. Only
   the browser/network scripts stay Deno-only.
+- **Single distributable binary.** [goreleaser](cli-go/.goreleaser.yaml) builds `journey-atlas`
+  for macOS + Linux (amd64/arm64); a self-hosted **Release** workflow runs it in OrbStack on a
+  `vX.Y.Z` tag, so you can run the browser-free pipeline with no Deno/Go at all.
 - **Unit tests** (`deno task test`) — the shared great-circle/polyline maths (`scripts/lib/geo.mjs`,
   deduped from four scripts) and the schema compile/validate helpers, covered by `deno test`
   and gated in CI.
@@ -53,7 +56,8 @@ forward are welcome; grab one and open an issue to claim it.
 - **Auto-declutter** — a POI shown inside a blow-up inset is not redrawn on the main map.
 - **Wide two-column distance legend.**
 - **Elevation profiles** — `fetch-elevation.mjs` (keyless Open-Meteo) → `elevation[]`; an
-  interactive area chart (peak, climb, crosshair tooltip) on `/trip`.
+  interactive area chart (peak, climb, crosshair tooltip) on `/trip`, **and a compact
+  elevation strip on the 1600×1200 poster** (in the distance/legend card).
 
 **Import & data helpers**
 - **GPX / KML import** (`deno task gpx`) — a recorded track → paste-ready `drives[]` fragment.
@@ -75,18 +79,13 @@ forward are welcome; grab one and open an issue to claim it.
 
 ## Near-term 🔭 — natural next steps
 
-- **Elevation on the poster too.** The profile is `/trip`-only today; add it to the 1600×1200
-  poster (a corner sparkline or a slim strip under the legend).
 - **Deep-linkable + exportable web UI.** `?theme=&style=&roads=` URL state and a "Download
   poster PNG" button that reuses the render path.
-- **Weather, wired in.** Let `build-trip` optionally call `fetch-weather` and populate
-  `weather[]` from `stays[]` dates + coordinates automatically (same pattern as elevation).
-- **Single distributable native binary.** The Go CLI now covers the whole pure pipeline; ship a
-  `journey-atlas` release binary (goreleaser, per-arch) so contributors don't need Deno for the
-  browser-free commands at all.
 - **Fold `weather`/`elevation` into `build`.** Let `build-trip` optionally fetch + populate
   `weather[]`/`elevation[]` from `stays[]` dates + coordinates (the last two scripts that can't
   go native, since they need the network).
+- **Cut the first tagged release.** The Release workflow is wired; push a `v0.1.0` tag to
+  publish the first native-CLI binaries, then link them from the README.
 - **Accessibility pass.** Keyboard-navigable map controls, focus states, alt text,
   reduced-motion, and a WCAG-AA contrast check across all four themes.
 

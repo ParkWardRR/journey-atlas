@@ -1,0 +1,29 @@
+name: Release native CLI (self-hosted · OrbStack)
+
+# Build the journey-atlas native CLI (macOS + Linux, amd64/arm64) with goreleaser,
+# on the Mac mini via OrbStack — never on GitHub-hosted runners.
+#   • push a vX.Y.Z tag  → publish a GitHub Release with the binaries
+#   • manual dispatch     → snapshot build only (no publish), to smoke-test
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: goreleaser in OrbStack
+    runs-on: [self-hosted, macos, orbstack]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # goreleaser needs full history + tags
+      - name: Publish release (on a vX.Y.Z tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash ci/orb-ci.sh release
+      - name: Snapshot build (manual dispatch — no publish)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: bash ci/orb-ci.sh snapshot
