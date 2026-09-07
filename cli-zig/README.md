@@ -1,6 +1,6 @@
 # journey-atlas (Zig CLI) — prototype
 
-A tiny, **zero-dependency** native companion to the Node scripts, in the same spirit
+A tiny, **zero-dependency** native companion to the Deno scripts, in the same spirit
 as [`cli-go/`](../cli-go) — but for the *other* browser-free script the Go port
 doesn't cover yet: the GPS sanity check.
 
@@ -39,6 +39,6 @@ one shot on exit — no manual frees, and the debug allocator reports no leaks.
 ## Status
 
 **Prototype.** Covers `verify-gps`. Complements `cli-go/` (`validate`, `doctor`,
-`build`); between the two, the only Node scripts still without a native port are the
+`build`); between the two, the only Deno scripts still without a native port are the
 ones that genuinely need a browser or the network: `render`/`render-all` (Playwright),
 `fetch-weather`/`fetch-elevation` (HTTP), and `gpx-import` (XML).

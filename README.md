@@ -8,6 +8,7 @@
 
 <p align="center">
   <a href="./LICENSE.md"><img alt="License: Blue Oak 1.0.0" src="https://img.shields.io/badge/license-Blue%20Oak%201.0.0-2563eb"></a>
+  <img alt="Deno" src="https://img.shields.io/badge/Deno-2-70ffaf?logo=deno&logoColor=black">
   <img alt="SvelteKit" src="https://img.shields.io/badge/SvelteKit-5-ff3e00?logo=svelte&logoColor=white">
   <img alt="Leaflet" src="https://img.shields.io/badge/Leaflet-1.9-199900?logo=leaflet&logoColor=white">
   <img alt="Playwright" src="https://img.shields.io/badge/render-Playwright-2ead33?logo=playwright&logoColor=white">
@@ -27,7 +28,7 @@
 </p>
 
 <p align="center"><img src="docs/hero-demo.gif" alt="Creating a trip: write YAML, validate, verify against GPS with a native Zig binary, render — then the finished satellite map" width="100%"></p>
-<p align="center"><sub>Above: the whole workflow — write your trip in plain <b>YAML</b>, then <code>doctor</code> → <code>build:trip</code> → a native <b>Zig</b> GPS check → <code>render</code> turns it into a print-ready map (here on Esri <b>satellite</b>). Regenerate with <code>node scripts/make-demo-gif.mjs</code>.</sub></p>
+<p align="center"><sub>Above: the whole workflow — write your trip in plain <b>YAML</b>, then <code>doctor</code> → <code>build:trip</code> → a native <b>Zig</b> GPS check → <code>render</code> turns it into a print-ready map (here on Esri <b>satellite</b>). Regenerate with <code>deno run -A scripts/make-demo-gif.mjs</code>.</sub></p>
 
 ---
 
@@ -60,22 +61,29 @@ Everything is data-driven. Swap the JSON, get a different trip. Swap `?style=`, 
 
 ## Quick start
 
+Prerequisite: **[Deno 2](https://deno.com/)** (`curl -fsSL https://deno.land/install.sh | sh`).
+No Node or npm needed — Deno runs the whole pipeline and pulls the npm deps itself.
+
 ```bash
 git clone https://github.com/ParkWardRR/journey-atlas
 cd journey-atlas
-npm install
+deno install                    # fetch npm deps (writes deno.lock)
 
 # 1) preview live in the browser
-npm run dev
+deno task dev
 #   http://localhost:5173/         the print poster (what render screenshots)
 #   http://localhost:5173/trip     the interactive, themed web UI
 
 # 2) render PNGs — no second terminal: if nothing is serving the app,
 #    render starts (and stops) Vite for you.
-npm run render                  # all keyless basemaps → output/
-npm run render -- watercolor    # just one
-npm run render:all              # build + render EVERY trips/*.yaml → output/samples/
+deno task render                # all keyless basemaps → output/
+deno task render watercolor     # just one
+deno task render:all            # build + render EVERY trips/*.yaml → output/samples/
 ```
+
+> Every task runs with **least-privilege permissions** (see `deno.json`) — e.g. `doctor`
+> gets read-only access, `weather`/`elevation` may only reach the Open-Meteo hosts. `npm run
+> <task>` still works too; the npm scripts just delegate to `deno task`.
 
 Poster query params: `?style=<basemap>&roads=<palette>&blowups=1`.
 
@@ -98,11 +106,11 @@ Each theme also sets a sensible default **basemap** and **road palette**, both o
 dropdowns beside it (Night applies a dark-map tile filter over any basemap).
 
 **`/gallery`** is the index of every route in [`trips/`](trips/) — a themed card grid with each
-trip's rendered map thumbnail (the committed `docs/trips/*.png` from `npm run render:all`), its
-distance and stay / ferry / sight counts, linking to the full-size map. `npm run build:index`
+trip's rendered map thumbnail (the committed `docs/trips/*.png` from `deno task render:all`), its
+distance and stay / ferry / sight counts, linking to the full-size map. `deno task build:index`
 regenerates `src/lib/trips-index.json` (it also runs automatically before every build).
 
-It's a static build — `npm run build` prerenders `/`, `/trip` **and** `/gallery` into `build/` with
+It's a static build — `deno task build` prerenders `/`, `/trip` **and** `/gallery` into `build/` with
 `@sveltejs/adapter-static`, so the whole thing hosts as plain files with no server. Swap
 `trips/*.yaml`, rebuild, and the poster, the trip page and the gallery all update from the same data.
 
@@ -114,16 +122,16 @@ file the map renders:
 
 ```bash
 # edit trips/adriatic-crossing.yaml, then:
-npm run build:trip -- trips/adriatic-crossing.yaml
+deno task build:trip trips/adriatic-crossing.yaml
 #  → validates against schema/journey.schema.json
 #  → writes src/lib/journey.json   (errors point at the exact bad field)
-npm run dev        # see it
+deno task dev        # see it
 ```
 
 **Ten ready-to-tune starter routes** ship in [`trips/`](trips/) — each with real ferry crossings,
 overnight bases, sights and a distance legend, ready to refine. The maps below were rendered
-straight from those YAMLs on **Stamen Terrain** (`npm run build:trip -- trips/<file>` then
-`npm run render -- stamen`):
+straight from those YAMLs on **Stamen Terrain** (`deno task build:trip trips/<file>` then
+`deno task render stamen`):
 
 ### Starter routes gallery
 
@@ -188,7 +196,7 @@ The schema is small and self-describing, so an LLM can fill it from a plain itin
 > overnight bases in `stays` in order, sights in `pois`, and add a couple of `insets` over
 > empty sea. Don't invent places I didn't mention.
 
-Then `npm run build:trip -- trips/my-trip.yaml && npm run dev`.
+Then `deno task build:trip trips/my-trip.yaml && deno task dev`.
 
 ## Helper scripts
 
@@ -198,7 +206,7 @@ that disagrees with the summed `roadStats`, drive road-classes missing from the 
 degenerate/absurd ferry legs. Exits non-zero on hard errors, so it doubles as a CI gate:
 
 ```bash
-npm run doctor -- trips/*.yaml
+deno task doctor trips/*.yaml
 # ✓ trips/01-norway-kystriksveien.yaml  — clean
 # ⚠ trips/adriatic-crossing.yaml
 #     warn   road class "b" is in the legend but never driven
@@ -207,7 +215,7 @@ npm run doctor -- trips/*.yaml
 **Real historical weather** — no key, from the Open-Meteo archive:
 
 ```bash
-node scripts/fetch-weather.mjs data/weather-input.json
+deno task weather data/weather-input.json
 # → prints a ready-to-paste `weather` array (real °C/°F + emoji per day/place)
 ```
 
@@ -217,15 +225,15 @@ elevation, and prints a paste-ready `elevation` array; the `/trip` page then dra
 interactive area chart (peak, total climb, crosshair tooltip) under the map:
 
 ```bash
-npm run elevation -- trips/01-norway-kystriksveien.yaml   # → paste-ready elevation[]
-npm run elevation -- my-trip.json --samples 60            # denser profile
+deno task elevation trips/01-norway-kystriksveien.yaml   # → paste-ready elevation[]
+deno task elevation my-trip.json --samples 60            # denser profile
 ```
 
 **GPS truth-check** — make sure every stay/POI is a place you actually went, by
 comparing against a GPS track (e.g. one pulled from your geotagged photos):
 
 ```bash
-node scripts/verify-gps.mjs data/example-gps.csv
+deno task verify-gps data/example-gps.csv
 # stay   Bari                        0.00 km   OK
 # poi    Rila Monastery            118.7  km   NO-GPS   ← drop it, you were never there
 ```
@@ -237,23 +245,23 @@ hand-typing coordinate polylines. The track is simplified (Douglas–Peucker) to
 points, the length becomes `totalMiles`, and any waypoints become `pois[]`:
 
 ```bash
-npm run gpx -- data/example-track.gpx --cls b       # → YAML fragment on stdout
-npm run gpx -- track.kml --tol 120 --json           # coarser, as JSON
+deno task gpx data/example-track.gpx --cls b       # → YAML fragment on stdout
+deno task gpx track.kml --tol 120 --json           # coarser, as JSON
 ```
 
 GPX carries no road class, so the whole leg gets one `--cls` (default `minor`) — split it into
 `segs` by hand where the road actually changes. Paste the fragment into your trip, then
-`npm run doctor` and `npm run build:trip`.
+`deno task doctor` and `deno task build:trip`.
 
 ## Native CLIs
 
 The browser-free parts of the pipeline also ship as **zero-dependency native binaries** — handy
-for CI, editor hooks, or a single distributable. Each is **byte-for-byte identical** to the Node
-script it mirrors, and each is a standalone companion (no npm/Node required to build or run it).
+for CI, editor hooks, or a single distributable. Each is **byte-for-byte identical** to the Deno
+script it mirrors, and each is a standalone companion (no Deno/Node required to build or run it).
 
 | Dir | Language | Commands | Mirrors |
 |---|---|---|---|
-| [`cli-go/`](cli-go/) | **Go** | `validate` · `doctor` · `build` | `build-trip.mjs` · `trip-doctor.mjs` |
+| [`cli-go/`](cli-go/) | **Go 1.24** | `validate` · `doctor` · `build` | `build-trip.mjs` · `trip-doctor.mjs` |
 | [`cli-zig/`](cli-zig/) | **Zig 0.16** | `verify-gps` | `verify-gps.mjs` |
 
 ```bash
@@ -262,7 +270,7 @@ cd cli-zig && zig build && ./zig-out/bin/journey-atlas-verify ../data/example-gp
 ```
 
 Anything that needs a browser or the network — `render`/`render:all` (Playwright),
-`weather`/`elevation` (HTTP), `gpx` (XML) — stays in Node.
+`weather`/`elevation` (HTTP), `gpx` (XML) — stays in Deno.
 
 ## Basemaps
 

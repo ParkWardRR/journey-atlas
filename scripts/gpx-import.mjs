@@ -2,10 +2,10 @@
 // for a journey — so you don't hand-type coordinate polylines. Pairs with
 // verify-gps.mjs (which truth-checks stays/POIs against the same kind of track).
 //
-//   node scripts/gpx-import.mjs track.gpx                 # → YAML fragment on stdout
-//   node scripts/gpx-import.mjs track.kml --cls a         # road class for the leg
-//   node scripts/gpx-import.mjs track.gpx --tol 120       # simplify tolerance (metres)
-//   node scripts/gpx-import.mjs track.gpx --json          # emit JSON instead of YAML
+//   deno task gpx track.gpx                 # → YAML fragment on stdout
+//   deno task gpx track.kml --cls a         # road class for the leg
+//   deno task gpx track.gpx --tol 120       # simplify tolerance (metres)
+//   deno task gpx track.gpx --json          # emit JSON instead of YAML
 //
 // GPX has no notion of road class, so every simplified leg gets one class (--cls,
 // default "minor"); split it into segs by hand where the road actually changes.
@@ -25,7 +25,7 @@ const cls = opt('cls', 'minor');
 const tolM = Number(opt('tol', 60));
 
 if (!file) {
-  console.error('usage: node scripts/gpx-import.mjs <track.gpx|track.kml> [--cls minor] [--tol 60] [--json]');
+  console.error('usage: deno task gpx <track.gpx|track.kml> [--cls minor] [--tol 60] [--json]');
   process.exit(1);
 }
 if (!['motorway', 'a', 'b', 'minor'].includes(cls)) {

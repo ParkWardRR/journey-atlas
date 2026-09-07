@@ -1,8 +1,8 @@
 // Compile a trip (YAML or JSON) into src/lib/journey.json — the file the map
 // renders — after validating it against schema/journey.schema.json.
 //
-//   node scripts/build-trip.mjs trips/adriatic-crossing.yaml
-//   node scripts/build-trip.mjs my-trip.json
+//   deno task build:trip trips/adriatic-crossing.yaml
+//   deno task build:trip my-trip.json
 //
 // Humans (or their agents) edit the readable source in trips/; this makes the
 // machine file. Errors point at the exact field that's wrong.

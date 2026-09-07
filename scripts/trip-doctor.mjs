@@ -4,8 +4,8 @@
 // that disagrees with the summed roadStats, drive road-classes missing from the
 // legend, and degenerate/absurd ferry legs.
 //
-//   node scripts/trip-doctor.mjs trips/adriatic-crossing.yaml
-//   node scripts/trip-doctor.mjs trips/*.yaml         # lint many at once
+//   deno task doctor trips/adriatic-crossing.yaml
+//   deno task doctor trips/*.yaml         # lint many at once
 //
 // Exit code: 0 if every file is clean or warn-only, 1 if any ERROR is found.
 
@@ -100,7 +100,7 @@ function lint(src) {
 }
 
 const files = process.argv.slice(2);
-if (!files.length) { console.error('usage: node scripts/trip-doctor.mjs <trip.yaml> [more…]'); process.exit(1); }
+if (!files.length) { console.error('usage: deno task doctor <trip.yaml> [more…]'); process.exit(1); }
 
 let bad = 0;
 for (const src of files) {

@@ -1,6 +1,6 @@
 # journey-atlas (Go CLI) — prototype
 
-A small, dependency-light **native** companion to the Node scripts, for the parts of
+A small, dependency-light **native** companion to the Deno scripts, for the parts of
 the pipeline that are pure data-in / exit-code-out (no browser, no map render):
 
 | command | mirrors | what it does |
@@ -27,13 +27,13 @@ go build -o journey-atlas .
 ```
 
 Per-subcommand flags come **before** the file (Go stdlib convention).
-`doctor` output matches the Node `trip-doctor` line-for-line, and `build` output is
+`doctor` output matches the Deno `trip-doctor` line-for-line, and `build` output is
 **byte-for-byte identical** to `scripts/build-trip.mjs` (source key order preserved,
 `$schema` first, no HTML escaping) — so you can swap either implementation in.
 
 ## Status
 
 **Prototype.** Covers `validate`, `doctor`, and `build`. Not yet ported: weather fetch
-and GPX/KML import — those stay in Node for now.
+and GPX/KML import — those stay in Deno for now.
 Dependencies: [`santhosh-tekuri/jsonschema`](https://github.com/santhosh-tekuri/jsonschema)
 (draft 2020-12) and `gopkg.in/yaml.v3`.

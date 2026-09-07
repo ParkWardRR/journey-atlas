@@ -2,7 +2,7 @@
 // ready-to-paste `weather` array for journey.json — from the free Open-Meteo
 // archive (no API key). Archive data lags ~5 days, so only past dates resolve.
 //
-//   node scripts/fetch-weather.mjs data/weather-input.json
+//   deno task weather data/weather-input.json
 //
 // Input JSON: an array of { date: "YYYY-MM-DD", lat, lon, where }.
 // One HTTP call fetches every location at once.

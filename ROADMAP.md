@@ -16,19 +16,22 @@ forward are welcome; grab one and open an issue to claim it.
   [`schema/journey.schema.json`](schema/journey.schema.json) into `src/lib/journey.json`;
   `render.mjs` drives headless Chromium and screenshots the fixed 1600×1200 `#journey-card`.
 - **15 basemaps, 4 road palettes,** with graceful Stadia-key fallback to keyless look-alikes.
-- **Native CLIs**, each **byte-for-byte identical** to the Node script it mirrors:
+- **Native CLIs**, each **byte-for-byte identical** to the Deno script it mirrors:
   [`cli-go/`](cli-go/) (**Go**) does `validate` · `doctor` · `build`; [`cli-zig/`](cli-zig/)
   (**Zig 0.16**) does `verify-gps`. Zero-dependency companions for the browser-free commands.
+- **Deno 2 toolchain.** The whole script pipeline runs on **Deno 2** — tasks in `deno.json`
+  with **least-privilege permissions**, built-in `deno lint`, one `deno.lock`, and no Node/npm
+  install step (npm deps are resolved on demand). CI runs on `denoland/setup-deno`.
 
 **Rendering & authoring tooling**
-- **Multi-trip render, no collisions** — `npm run render:all` builds + renders every `trips/*.yaml`
+- **Multi-trip render, no collisions** — `deno task render:all` builds + renders every `trips/*.yaml`
   to `output/samples/` with per-trip names; single `render` now **starts/stops Vite itself**
   (no second terminal) and takes `--out`.
-- **Trip-doctor** (`npm run doctor`) — plausibility lint beyond schema: coordinate ranges,
+- **Trip-doctor** (`deno task doctor`) — plausibility lint beyond schema: coordinate ranges,
   likely-swapped lat/lon, `totalMiles` vs summed `roadStats`, drive classes vs legend,
   degenerate ferries, insets off the 1600×1200 canvas.
 - **CI on every PR** — schema-validate every trip, run the doctor, build the static site, and
-  build the Go CLI + diff its `build` output against Node.
+  build the Go CLI + diff its `build` output against the Deno build.
 
 **Map features**
 - **POI categories** (`poiKinds` + `pois[].kind`) — tagged sights get a coloured/emoji marker
@@ -39,7 +42,7 @@ forward are welcome; grab one and open an issue to claim it.
   interactive area chart (peak, climb, crosshair tooltip) on `/trip`.
 
 **Import & data helpers**
-- **GPX / KML import** (`npm run gpx`) — a recorded track → paste-ready `drives[]` fragment.
+- **GPX / KML import** (`deno task gpx`) — a recorded track → paste-ready `drives[]` fragment.
 - **Real weather** (`fetch-weather.mjs`) and **GPS truth-check** (`verify-gps.mjs`).
 
 **Web experience**
@@ -48,7 +51,7 @@ forward are welcome; grab one and open an issue to claim it.
 - **`/gallery`** — a themed card grid of every trip with rendered thumbnails.
 - **Four curated themes** (Daylight · Night · Vintage · Minimal), persisted, system-aware,
   **no theme flash** (pre-paint), with keyless-Stadia labelling in the basemap picker.
-- **Static build** — `npm run build` prerenders `/`, `/trip` and `/gallery` via `adapter-static`.
+- **Static build** — `deno task build` prerenders `/`, `/trip` and `/gallery` via `adapter-static`.
 
 ---
 

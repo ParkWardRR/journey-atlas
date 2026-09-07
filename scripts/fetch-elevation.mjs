@@ -2,8 +2,8 @@
 // `elevation` array for the trip — real terrain from the free Open-Meteo
 // Elevation API (no key). Pairs with the elevation chart on the /trip page.
 //
-//   node scripts/fetch-elevation.mjs trips/01-norway-kystriksveien.yaml
-//   node scripts/fetch-elevation.mjs my-trip.json --samples 60
+//   deno task elevation trips/01-norway-kystriksveien.yaml
+//   deno task elevation my-trip.json --samples 60
 //
 // It concatenates every drives[].segs[].line[] into one route, samples N points
 // evenly by distance (interpolating along the polyline), fetches their elevation,

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Render the current example trip across several basemaps and stitch an animated
-# GIF — a "same trip, many looks" hero. Reproducible anywhere Node + ffmpeg run
-# (e.g. a container). Renders reuse scripts/render.mjs (which starts its own Vite).
+# GIF — a "same trip, many looks" hero. Reproducible anywhere Deno + ffmpeg run
+# (e.g. a container). Renders reuse `deno task render` (which starts its own Vite).
 #
 #   scripts/make-hero-gif.sh
 #   STYLES="stamen watercolor natgeo opentopo ocean" OUT=docs/hero-demo.gif scripts/make-hero-gif.sh
@@ -22,7 +22,7 @@ rm -f "$FRAMES_DIR"/frame-*.png
 
 # 1) render each basemap → output/demo-<style>.png
 # shellcheck disable=SC2086
-node scripts/render.mjs --out demo $STYLES
+deno task render --out demo $STYLES
 
 # 2) order them into a numbered frame sequence
 i=0

@@ -11,37 +11,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: denoland/setup-deno@v2
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
+          deno-version: v2.x
+      - run: deno install
+      # deno lint over the script pipeline (built-in, no extra deps).
+      - name: Lint scripts
+        run: deno lint
       # Every trip must compile against schema/journey.schema.json …
       - name: Schema-validate every trip
         run: |
           shopt -s nullglob
           for f in trips/*.yaml trips/*.json; do
             echo "· $f"
-            node scripts/build-trip.mjs "$f"
+            deno task build:trip "$f"
           done
       # … and pass the plausibility checks (fails only on hard ERRORs).
       - name: Trip-doctor plausibility lint
         run: |
           shopt -s nullglob
           files=(trips/*.yaml trips/*.json)
-          node scripts/trip-doctor.mjs "${files[@]}"
+          deno task doctor "${files[@]}"
 
   build:
     name: Static build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: denoland/setup-deno@v2
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run build
+          deno-version: v2.x
+      - run: deno install
+      - run: deno task build
 
   go-cli:
     name: Go CLI (build + parity)
@@ -52,11 +53,10 @@ jobs:
         with:
           go-version: '1.24'
           cache-dependency-path: cli-go/go.sum
-      - uses: actions/setup-node@v4
+      - uses: denoland/setup-deno@v2
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
+          deno-version: v2.x
+      - run: deno install
       - name: Build
         working-directory: cli-go
         run: go build -o journey-atlas .
@@ -67,15 +67,15 @@ jobs:
           files=(trips/*.yaml trips/*.json)
           ./cli-go/journey-atlas validate "${files[@]}"
           ./cli-go/journey-atlas doctor "${files[@]}"
-      # And its `build` output must be byte-identical to scripts/build-trip.mjs.
-      - name: Build parity vs Node
+      # And its `build` output must be byte-identical to the Deno build task.
+      - name: Build parity vs Deno
         run: |
           shopt -s nullglob
           for f in trips/*.yaml trips/*.json; do
-            node scripts/build-trip.mjs "$f" >/dev/null
+            deno task build:trip "$f" >/dev/null
             cp src/lib/journey.json /tmp/node.json
             ./cli-go/journey-atlas build --out /tmp/go.json "$f" >/dev/null
             diff /tmp/node.json /tmp/go.json || { echo "build mismatch on $f"; exit 1; }
           done
           git checkout -- src/lib/journey.json
-          echo "build output matches Node for every trip"
+          echo "build output matches the Deno build for every trip"

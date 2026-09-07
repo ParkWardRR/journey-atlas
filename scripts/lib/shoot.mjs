@@ -27,6 +27,7 @@ export async function shoot(context, { base, style, roads = 'signage', blowups =
     const url = `${base}/?style=${style}&roads=${roads}&blowups=${blowups}`;
     await page.goto(url, { waitUntil: 'load' });
     await page.waitForSelector('#journey-card', { state: 'visible' });
+    // deno-lint-ignore no-window -- runs in the page (browser) context, not Deno
     await page.waitForFunction(() => window.__mapReady === true, { timeout: 55000 }).catch(() => {});
     await page.waitForTimeout(4000);
     const el = await page.$('#journey-card');

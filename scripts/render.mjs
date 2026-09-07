@@ -1,9 +1,9 @@
 // Render the current trip (src/lib/journey.json) to PNG(s) with headless Chromium.
 //
-//   npm run render                    # every keyless basemap → output/
-//   npm run render -- watercolor      # just one style
-//   npm run render -- --out hero stamen   # write output/hero-stamen.png
-//   URL=http://localhost:5173 npm run render
+//   deno task render                    # every keyless basemap → output/
+//   deno task render watercolor         # just one style
+//   deno task render --out hero stamen  # write output/hero-stamen.png
+//   URL=http://localhost:5173 deno task render
 //
 // No second terminal needed: if nothing is serving the app, we start `vite dev`
 // ourselves and stop it when done. Stadia styles (watercolor, stamen, outdoors,

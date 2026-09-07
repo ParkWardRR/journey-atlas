@@ -1,0 +1,48 @@
+{
+  "$schema": "https://raw.githubusercontent.com/denoland/deno/main/cli/schemas/config-file.v1.json",
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "dev": "vite dev",
+    "build": "deno task build:index && vite build",
+    "preview": "vite preview",
+
+    "build:trip": "deno run --allow-env --allow-read --allow-write=src/lib scripts/build-trip.mjs",
+    "build:index": "deno run --allow-env --allow-read --allow-write=src/lib scripts/build-index.mjs",
+
+    "doctor": "deno run --allow-env --allow-read scripts/trip-doctor.mjs",
+    "verify-gps": "deno run --allow-read scripts/verify-gps.mjs",
+    "gpx": "deno run --allow-env --allow-read scripts/gpx-import.mjs",
+
+    "weather": "deno run --allow-read --allow-net=archive-api.open-meteo.com scripts/fetch-weather.mjs",
+    "elevation": "deno run --allow-env --allow-read --allow-net=api.open-meteo.com scripts/fetch-elevation.mjs",
+
+    "render": "deno run -A scripts/render.mjs",
+    "render:all": "deno run -A scripts/render-all.mjs",
+
+    "check": "deno lint && deno task build",
+    "fmt": "deno fmt",
+    "lint": "deno lint"
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "singleQuote": true,
+    "semiColons": true,
+    "include": ["scripts/", "src/lib/basemaps.js", "vite.config.js", "svelte.config.js"],
+    "exclude": [
+      "build/",
+      ".svelte-kit/",
+      "node_modules/",
+      "src/lib/journey.json",
+      "src/lib/trips-index.json"
+    ]
+  },
+  "lint": {
+    "include": ["scripts/"],
+    "exclude": ["build/", ".svelte-kit/", "node_modules/"],
+    "rules": {
+      "tags": ["recommended"],
+      "exclude": ["no-process-global"]
+    }
+  }
+}

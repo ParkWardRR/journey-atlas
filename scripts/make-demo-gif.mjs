@@ -3,7 +3,7 @@
 // the finished map. Command outputs are REAL (captured live), and the final
 // frame is the actual rendered poster. Uses Playwright (frames) + ffmpeg (GIF).
 //
-//   node scripts/make-demo-gif.mjs [trips/adriatic-crossing.yaml]   STYLE=imagery
+//   deno run -A scripts/make-demo-gif.mjs [trips/adriatic-crossing.yaml]   STYLE=imagery
 //
 // Requires: Playwright (frames), ffmpeg (GIF), and Zig 0.16 (the native verify step).
 // Output: docs/hero-demo.gif
@@ -24,15 +24,15 @@ copyFileSync(SRC, NAME);
 
 // ── run the real workflow, capturing output ──────────────────────────────────
 const run = (cmd) => { try { return execSync(cmd, { encoding: 'utf8' }); } catch (e) { return (e.stdout || '') + (e.stderr || ''); } };
-const doctorOut = run(`node scripts/trip-doctor.mjs ${NAME}`).trimEnd();
-const buildOut = run(`node scripts/build-trip.mjs ${NAME}`).trimEnd();
+const doctorOut = run(`deno task doctor ${NAME}`).trimEnd();
+const buildOut = run(`deno task build:trip ${NAME}`).trimEnd();
 // native Zig verify against the GPS track — reads the freshly-built journey.json
 console.error('· building the Zig verifier…');
 run('cd cli-zig && zig build');
 const verifyOut = run('./cli-zig/zig-out/bin/journey-atlas-verify data/example-gps.csv')
   .split('\n').slice(0, 8).join('\n').trimEnd();
 console.error('· rendering the map…');
-run(`node scripts/render.mjs --out demoshot ${STYLE}`);
+run(`deno task render --out demoshot ${STYLE}`);
 copyFileSync(`output/demoshot-${STYLE}.png`, `${TMP}/map.png`);
 const renderOut = `wrote output/journey-${STYLE}.png`;
 
@@ -56,14 +56,14 @@ hist.push(out('# 1 · describe your trip in plain YAML — trips/my-trip.yaml', 
 hist.push(`<div class="code">${esc(snippet)}</div>`);
 push(screen());
 // 2·3 · doctor
-push(screen(cmdLine('npm run doctor -- trips/my-trip.yaml', true)));
-hist.push(cmdLine('npm run doctor -- trips/my-trip.yaml'));
+push(screen(cmdLine('deno task doctor trips/my-trip.yaml', true)));
+hist.push(cmdLine('deno task doctor trips/my-trip.yaml'));
 hist.push(out('# 2 · sanity-check the data', 'note'));
 for (const l of doctorOut.split('\n')) hist.push(out(l, l.includes('clean') || l.startsWith('✓') ? 'ok' : 'out'));
 push(screen());
 // build
-push(screen(cmdLine('npm run build:trip -- trips/my-trip.yaml', true)));
-hist.push(cmdLine('npm run build:trip -- trips/my-trip.yaml'));
+push(screen(cmdLine('deno task build:trip trips/my-trip.yaml', true)));
+hist.push(cmdLine('deno task build:trip trips/my-trip.yaml'));
 hist.push(out('# 3 · validate against the schema + compile', 'note'));
 for (const l of buildOut.split('\n')) hist.push(out(l, 'ok'));
 push(screen());
@@ -75,8 +75,8 @@ hist.push(out('# 4 · do the stops match your GPS photos?  (native Zig — no No
 for (const l of verifyOut.split('\n')) hist.push(out(l, l.endsWith('OK') ? 'ok' : 'out'));
 push(screen());
 // render
-push(screen(cmdLine(`npm run render -- ${STYLE}`, true)));
-hist.push(cmdLine(`npm run render -- ${STYLE}`));
+push(screen(cmdLine(`deno task render ${STYLE}`, true)));
+hist.push(cmdLine(`deno task render ${STYLE}`));
 hist.push(out('# 5 · screenshot the map to a print-ready PNG', 'note'));
 hist.push(out(`✓ ${renderOut}`, 'ok'));
 push(screen());
@@ -134,6 +134,6 @@ execSync(`ffmpeg -y -f concat -safe 0 -i ${TMP}/list.txt -vf "scale=1000:-1:flag
 execSync(`ffmpeg -y -f concat -safe 0 -i ${TMP}/list.txt -i ${pal} -lavfi "scale=1000:-1:flags=lanczos[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=3" -loop 0 ${OUT}`, { stdio: 'ignore' });
 
 rmSync(NAME, { force: true });
-run('node scripts/build-trip.mjs trips/adriatic-crossing.yaml'); // restore default journey.json
+run('deno task build:trip trips/adriatic-crossing.yaml'); // restore default journey.json
 const kb = Math.round(readFileSync(OUT).length / 1024);
 console.error(`✓ wrote ${OUT}  (${frames.length} frames · ${kb} KB)`);

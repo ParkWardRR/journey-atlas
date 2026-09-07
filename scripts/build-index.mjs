@@ -2,10 +2,10 @@
 // /gallery page lists (title, subtitle, a few stats, and whether a rendered
 // thumbnail exists in docs/trips/). Run after adding or editing trips:
 //
-//   npm run build:index
+//   deno task build:index
 //
 // The thumbnails themselves are the committed renders in docs/trips/<slug>.png
-// (produce them with `npm run render:all`); this only records which exist.
+// (produce them with `deno task render:all`); this only records which exist.
 
 import { readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { basename, extname, join } from 'node:path';

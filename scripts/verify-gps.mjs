@@ -1,8 +1,8 @@
 // Sanity-check every point in journey.json against a real GPS track (e.g. one
 // extracted from geotagged trip photos), so the map only shows places you were.
 //
-//   node scripts/verify-gps.mjs data/example-gps.csv
-//   node scripts/verify-gps.mjs my-track.csv 3      # custom "OK" threshold (km)
+//   deno task verify-gps data/example-gps.csv
+//   deno task verify-gps my-track.csv 3      # custom "OK" threshold (km)
 //
 // The CSV must have `latitude` and `longitude` columns (a header row).
 // For every stay + POI it reports the distance to the nearest GPS point and an
@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 
 const csvFile = process.argv[2];
 const OKKM = Number(process.argv[3] || 3);
-if (!csvFile) { console.error('usage: node scripts/verify-gps.mjs <track.csv> [okKm]'); process.exit(1); }
+if (!csvFile) { console.error('usage: deno task verify-gps <track.csv> [okKm]'); process.exit(1); }
 
 const data = JSON.parse(readFileSync(new URL('../src/lib/journey.json', import.meta.url), 'utf8'));
 

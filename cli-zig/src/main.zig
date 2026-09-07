@@ -1,6 +1,6 @@
 // journey-atlas (Zig) — a native `verify-gps`, the browser-free sanity check that
 // every stay + POI in src/lib/journey.json sits near a real GPS point (e.g. one
-// extracted from geotagged trip photos). A Zig companion to the Node script
+// extracted from geotagged trip photos). A Zig companion to the Deno script
 // scripts/verify-gps.mjs, byte-for-byte identical on the same inputs.
 //
 //   journey-atlas-verify data/example-gps.csv
@@ -8,7 +8,7 @@
 //
 // The CSV needs `latitude` and `longitude` columns (a header row). Run from the
 // repo root so the fixed src/lib/journey.json path resolves. Exit 1 on usage /
-// I/O error, 0 otherwise — mirrors the Node script so either can drop into CI.
+// I/O error, 0 otherwise — mirrors the Deno script so either can drop into CI.
 
 const std = @import("std");
 
@@ -77,7 +77,7 @@ pub fn main(init: std.process.Init) !void {
     try out.writeStreamingAll(io, buf.items);
 }
 
-// One report row, matching the Node template exactly:
+// One report row, matching the Deno template exactly:
 //   `${label.padEnd(6)} ${name.padEnd(24)} ${d.toFixed(2).padStart(7)} km   ${verdict}`
 fn line(buf: *std.ArrayList(u8), gpa: std.mem.Allocator, label: []const u8, name: []const u8, lat: f64, lon: f64, track: []const [2]f64, ok_km: f64) !void {
     const d = nearest(lat, lon, track);

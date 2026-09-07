@@ -1,9 +1,9 @@
 // Build AND render every trip in trips/ into output/samples/, one PNG per trip —
 // no manual build→render→rename loop, no filename collisions.
 //
-//   npm run render:all                 # stamen for every trips/*.yaml|json
-//   npm run render:all -- opentopo     # a different basemap
-//   npm run render:all -- --glob 'trips/0*.yaml' ocean
+//   deno task render:all               # stamen for every trips/*.yaml|json
+//   deno task render:all opentopo      # a different basemap
+//   deno task render:all --dir trips ocean
 //
 // Starts its own server (once) and reuses it across all trips, then stops it.
 
