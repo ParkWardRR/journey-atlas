@@ -26,6 +26,7 @@
     "doctor": "node scripts/trip-doctor.mjs",
     "gpx": "node scripts/gpx-import.mjs",
     "weather": "node scripts/fetch-weather.mjs",
+    "elevation": "node scripts/fetch-elevation.mjs",
     "verify-gps": "node scripts/verify-gps.mjs"
   },
   "devDependencies": {

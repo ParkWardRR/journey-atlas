@@ -4,6 +4,7 @@
   import '$lib/themes.css';
   import data from '$lib/journey.json';
   import AtlasMap from '$lib/AtlasMap.svelte';
+  import ElevationChart from '$lib/ElevationChart.svelte';
   import {
     THEMES, THEME_BY_ID, TILES, BASEMAP_OPTIONS, PALETTE_OPTIONS,
     PALETTES, resolveStyle, HAS_STADIA_KEY, STADIA_FALLBACK
@@ -205,6 +206,14 @@
             </div>
           {/each}
         </div>
+      </section>
+    {/if}
+
+    <!-- Elevation profile -->
+    {#if data.elevation?.length >= 2}
+      <section class="block">
+        <h2 class="block-title">Elevation profile</h2>
+        <ElevationChart data={data.elevation} />
       </section>
     {/if}
 
