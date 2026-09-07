@@ -20,13 +20,17 @@ stays:
 
 # --- sights (orange dots, auto-labelled) ------------------------------------
 pois:
-  - { name: Polignano a Mare, lat: 40.996, lon: 17.220 }
+  - { name: Polignano a Mare, lat: 40.996, lon: 17.220, kind: swim }
   - { name: Krujë Castle,     lat: 41.509, lon: 19.793 }
   - { name: Ohrid Old Town,   lat: 41.116, lon: 20.788 }
   - { name: Bay of the Bones, lat: 41.030, lon: 20.783 }
-  - { name: Sv. Naum,         lat: 40.914, lon: 20.742 }
+  - { name: Sv. Naum,         lat: 40.914, lon: 20.742, kind: swim }
   - { name: Matka Canyon,     lat: 41.958, lon: 21.300 }
   - { name: Rila Monastery,   lat: 42.133, lon: 23.340 }
+
+# optional POI categories — give tagged pois a distinct coloured/emoji marker
+poiKinds:
+  swim: { color: '#0891b2', emoji: 🏊 }
 
 # --- what you sailed (dashed sea-legs + numbered table) ---------------------
 ferries:
