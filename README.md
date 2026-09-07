@@ -293,6 +293,27 @@ cd cli-zig && zig build && ./zig-out/bin/journey-atlas-verify ../data/example-gp
 Anything that needs a browser or the network — `render`/`render:all` (Playwright),
 `weather`/`elevation` (HTTP), `gpx` (XML) — stays in Deno.
 
+## CI/CD — self-hosted on a Mac mini (OrbStack)
+
+CI/CD **never runs on GitHub-hosted runners.** A self-hosted runner on a Mac mini hands the
+whole pipeline to a reproducible **OrbStack** container ([`ci/Dockerfile`](ci/Dockerfile) —
+Deno + Go + Zig + Chromium + ffmpeg), so every check runs on our own hardware:
+
+```bash
+ci/orb-ci.sh check   # deno lint + unit tests + static build + Go byte-parity, in the container
+ci/orb-ci.sh gif     # re-render docs/hero-demo.gif (Zig verify → Playwright → ffmpeg) in the container
+ci/orb-ci.sh all     # both
+```
+
+The [`.github/workflows/ci.yml`](.github/workflows/ci.yml) job is `runs-on: [self-hosted, macos,
+orbstack]` and simply calls `ci/orb-ci.sh check`. Register the runner once with
+[`ci/setup-self-hosted-runner.sh`](ci/setup-self-hosted-runner.sh).
+
+> **Security:** this repo is public, so the workflow triggers on **push / manual only** — never
+> on fork `pull_request` — because a self-hosted runner must not execute untrusted code. Validate
+> changes by pushing a branch. The hero GIF above is itself rendered by `ci/orb-ci.sh gif` in
+> OrbStack, so it's reproducible on any machine with Docker.
+
 ## Basemaps
 
 `?style=` picks the tiles. All work with **no API key** except the four Stadia styles.

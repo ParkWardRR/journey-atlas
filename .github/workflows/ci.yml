@@ -1,84 +1,22 @@
-name: CI
+name: CI (self-hosted · OrbStack on Mac mini)
 
+# Runs on our own Mac mini via a self-hosted runner — never on GitHub-hosted
+# runners. Because this repo is PUBLIC, we deliberately do NOT run on fork
+# pull_requests (which could execute untrusted code on the runner): validation
+# happens by pushing branches. See ci/setup-self-hosted-runner.sh.
 on:
   push:
-    branches: [main]
-  pull_request:
+    branches: ['**']
+  workflow_dispatch:
 
+# One self-hosted job that hands the whole pipeline to OrbStack: lint, unit
+# tests, static build and the Go byte-parity check all run inside the
+# reproducible ci/Dockerfile image (Deno + Go + Zig + Chromium + ffmpeg).
 jobs:
-  trips:
-    name: Validate & lint trips
-    runs-on: ubuntu-latest
+  ci:
+    name: Pipeline in OrbStack
+    runs-on: [self-hosted, macos, orbstack]
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - run: deno install
-      # deno lint over the script pipeline (built-in, no extra deps).
-      - name: Lint scripts
-        run: deno lint
-      # Unit tests for the pure geo + build/validate helpers.
-      - name: Unit tests
-        run: deno task test
-      # Every trip must compile against schema/journey.schema.json …
-      - name: Schema-validate every trip
-        run: |
-          shopt -s nullglob
-          for f in trips/*.yaml trips/*.json; do
-            echo "· $f"
-            deno task build:trip "$f"
-          done
-      # … and pass the plausibility checks (fails only on hard ERRORs).
-      - name: Trip-doctor plausibility lint
-        run: |
-          shopt -s nullglob
-          files=(trips/*.yaml trips/*.json)
-          deno task doctor "${files[@]}"
-
-  build:
-    name: Static build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - run: deno install
-      - run: deno task build
-
-  go-cli:
-    name: Go CLI (build + parity)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
-          cache-dependency-path: cli-go/go.sum
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - run: deno install
-      - name: Build
-        working-directory: cli-go
-        run: go build -o journey-atlas .
-      # The Go CLI must agree with the schema + doctor on the real trips.
-      - name: Validate & doctor every trip
-        run: |
-          shopt -s nullglob
-          files=(trips/*.yaml trips/*.json)
-          ./cli-go/journey-atlas validate "${files[@]}"
-          ./cli-go/journey-atlas doctor "${files[@]}"
-      # And its `build` output must be byte-identical to the Deno build task.
-      - name: Build parity vs Deno
-        run: |
-          shopt -s nullglob
-          for f in trips/*.yaml trips/*.json; do
-            deno task build:trip "$f" >/dev/null
-            cp src/lib/journey.json /tmp/node.json
-            ./cli-go/journey-atlas build --out /tmp/go.json "$f" >/dev/null
-            diff /tmp/node.json /tmp/go.json || { echo "build mismatch on $f"; exit 1; }
-          done
-          git checkout -- src/lib/journey.json
-          echo "build output matches the Deno build for every trip"
+      - name: Lint · tests · build · Go byte-parity (OrbStack)
+        run: bash ci/orb-ci.sh check

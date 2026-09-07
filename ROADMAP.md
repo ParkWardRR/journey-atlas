@@ -21,7 +21,12 @@ forward are welcome; grab one and open an issue to claim it.
   (**Zig 0.16**) does `verify-gps`. Zero-dependency companions for the browser-free commands.
 - **Deno 2 toolchain.** The whole script pipeline runs on **Deno 2** — tasks in `deno.json`
   with **least-privilege permissions**, built-in `deno lint`, one `deno.lock`, and no Node/npm
-  install step (npm deps are resolved on demand). CI runs on `denoland/setup-deno`.
+  install step (npm deps are resolved on demand).
+- **Self-hosted CI/CD on a Mac mini, via OrbStack.** No GitHub-hosted runners: a self-hosted
+  runner on the mini hands the whole pipeline to a reproducible OrbStack container
+  (`ci/Dockerfile` — Deno + Go + Zig + Chromium + ffmpeg). `ci/orb-ci.sh check` runs
+  lint + tests + build + Go byte-parity; `ci/orb-ci.sh gif` re-renders the hero GIF in the
+  same container (`ci/setup-self-hosted-runner.sh` registers the runner).
 - **Unit tests** (`deno task test`) — the shared great-circle/polyline maths (`scripts/lib/geo.mjs`,
   deduped from four scripts) and the schema compile/validate helpers, covered by `deno test`
   and gated in CI.
@@ -33,8 +38,9 @@ forward are welcome; grab one and open an issue to claim it.
 - **Trip-doctor** (`deno task doctor`) — plausibility lint beyond schema: coordinate ranges,
   likely-swapped lat/lon, `totalMiles` vs summed `roadStats`, drive classes vs legend,
   degenerate ferries, insets off the 1600×1200 canvas.
-- **CI on every PR** — schema-validate every trip, run the doctor, build the static site, and
-  build the Go CLI + diff its `build` output against the Deno build.
+- **CI on every push** — the self-hosted OrbStack job schema-validates every trip, runs the
+  doctor and unit tests, builds the static site, and diffs the Go CLI's `build` output against
+  the Deno build for byte-parity.
 
 **Map features**
 - **POI categories** (`poiKinds` + `pois[].kind`) — tagged sights get a coloured/emoji marker
@@ -71,8 +77,13 @@ forward are welcome; grab one and open an issue to claim it.
 - **Weather, wired in.** Let `build-trip` optionally call `fetch-weather` and populate
   `weather[]` from `stays[]` dates + coordinates automatically (same pattern as elevation).
 - **Round out the native CLIs.** The Go binary still lacks `verify-gps` (now in Zig) and neither
-  covers `gpx-import`; port the remaining pure scripts so a single native toolchain matches Node
-  end-to-end, and add a CI job that builds the Zig binary + checks parity.
+  covers `gpx-import`/`correlate`; port the remaining pure scripts so a single native toolchain
+  matches the Deno pipeline end-to-end.
+- **Zig parity in the OrbStack CI.** `ci/orb-ci.sh check` already covers Go byte-parity; add a
+  step that builds the Zig binary and diffs `verify-gps` output against the Deno script too.
+- **Auto-commit the regenerated hero.** Wire `ci/orb-ci.sh gif` into a `workflow_dispatch` (or
+  a `[gif]`-tagged push) that opens a PR / pushes the refreshed `docs/hero-demo.gif` — the
+  render already runs in the container, so this is just plumbing + an image-layer cache.
 - **Accessibility pass.** Keyboard-navigable map controls, focus states, alt text,
   reduced-motion, and a WCAG-AA contrast check across all four themes.
 
