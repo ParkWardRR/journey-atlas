@@ -9,7 +9,9 @@ export const ALL = [...KEYLESS, ...STADIA];
 
 // Run `fn(context)` with a browser sized to the poster card, then tear it down.
 export async function withBrowser(fn) {
-  const browser = await chromium.launch();
+  // --no-sandbox lets headless Chromium run as root (containers/CI); opt-in via env.
+  const args = process.env.JA_NO_SANDBOX ? ['--no-sandbox', '--disable-dev-shm-usage'] : [];
+  const browser = await chromium.launch({ args });
   const context = await browser.newContext({ viewport: { width: 1600, height: 1200 }, deviceScaleFactor: 1 });
   try {
     return await fn(context);
