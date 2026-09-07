@@ -168,6 +168,7 @@ inline docs** in VS Code (the example's `$schema` key wires it up automatically)
 | `drives[]` | `{ label, segs:[{ cls, line:[[lat,lon]…] }] }` — `cls` ∈ `motorway \| a \| b \| minor` |
 | `roadStats[]` | `{ cls, label, mi }` legend rows |
 | `weather[]` | `{ d, icon, where, t }` (+ `weatherMonth`) — see the weather script below |
+| `elevation[]` | `{ mi, m }` route elevation profile — see the elevation script below |
 | `insets[]` | blow-ups: `{ title, center:[lat,lon], zoom, cx, cy, r, poiKm, capMode? }` |
 | `note` | optional callout: `{ anchor:[lat,lon], tip:[lat,lon], title, sub }` |
 | `finale` | optional off-edge tag: `{ from:[lat,lon], dx, label }` |
@@ -207,6 +208,16 @@ npm run doctor -- trips/*.yaml
 ```bash
 node scripts/fetch-weather.mjs data/weather-input.json
 # → prints a ready-to-paste `weather` array (real °C/°F + emoji per day/place)
+```
+
+**Elevation profile** — real terrain along the route, no key, from the Open-Meteo
+elevation API. It samples the `drives[]` polyline evenly, fetches each point's
+elevation, and prints a paste-ready `elevation` array; the `/trip` page then draws an
+interactive area chart (peak, total climb, crosshair tooltip) under the map:
+
+```bash
+npm run elevation -- trips/01-norway-kystriksveien.yaml   # → paste-ready elevation[]
+npm run elevation -- my-trip.json --samples 60            # denser profile
 ```
 
 **GPS truth-check** — make sure every stay/POI is a place you actually went, by

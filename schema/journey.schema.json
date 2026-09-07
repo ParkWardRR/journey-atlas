@@ -126,6 +126,19 @@
     },
     "weatherMonth": { "type": "string", "description": "e.g. \"June 2027\"" },
 
+    "elevation": {
+      "type": "array",
+      "description": "Elevation profile along the driving route (generate with scripts/fetch-elevation.mjs)",
+      "items": {
+        "type": "object",
+        "required": ["mi", "m"],
+        "properties": {
+          "mi": { "type": "number", "description": "Cumulative miles along the route" },
+          "m": { "type": "number", "description": "Elevation in metres" }
+        }
+      }
+    },
+
     "insets": {
       "type": "array",
       "description": "Magnified blow-up circles for fiddly detail. cx/cy/r are PIXELS on the 1600×1200 canvas.",
