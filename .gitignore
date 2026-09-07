@@ -13,3 +13,8 @@ Thumbs.db
 # Go CLI build output
 /cli-go/journey-atlas
 /cli-go/dist
+
+# Zig CLI build output
+/cli-zig/journey-atlas-verify
+/cli-zig/zig-out
+/cli-zig/.zig-cache
