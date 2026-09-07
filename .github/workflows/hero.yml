@@ -1,0 +1,33 @@
+name: Refresh hero GIF (self-hosted · OrbStack)
+
+# Re-render docs/hero-demo.gif on the Mac mini via OrbStack and open a PR with
+# the result. Runs on manual dispatch, or on any push whose commit message
+# contains "[gif]". Never on GitHub-hosted runners.
+on:
+  workflow_dispatch:
+  push:
+    branches: ['**']
+
+jobs:
+  hero:
+    name: Render hero in OrbStack → PR
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[gif]')
+    runs-on: [self-hosted, macos, orbstack]
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Regenerate docs/hero-demo.gif in OrbStack
+        run: bash ci/orb-ci.sh gif
+      - name: Open a PR with the refreshed GIF
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/hero-refresh
+          add-paths: docs/hero-demo.gif
+          commit-message: "Refresh hero GIF (OrbStack render on the mini)"
+          title: "Refresh hero GIF"
+          body: |
+            Regenerated `docs/hero-demo.gif` by running `ci/orb-ci.sh gif` in OrbStack on the
+            self-hosted Mac mini (Zig verify → Playwright render → ffmpeg). Auto-opened by the
+            **Refresh hero GIF** workflow.

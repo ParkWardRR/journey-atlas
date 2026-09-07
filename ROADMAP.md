@@ -25,8 +25,13 @@ forward are welcome; grab one and open an issue to claim it.
 - **Self-hosted CI/CD on a Mac mini, via OrbStack.** No GitHub-hosted runners: a self-hosted
   runner on the mini hands the whole pipeline to a reproducible OrbStack container
   (`ci/Dockerfile` — Deno + Go + Zig + Chromium + ffmpeg). `ci/orb-ci.sh check` runs
-  lint + tests + build + Go byte-parity; `ci/orb-ci.sh gif` re-renders the hero GIF in the
-  same container (`ci/setup-self-hosted-runner.sh` registers the runner).
+  lint + tests + build + **Go and Zig byte-parity**; `ci/orb-ci.sh gif` re-renders the hero GIF
+  in the same container. A **Refresh hero GIF** workflow (`workflow_dispatch` / `[gif]` push)
+  regenerates the GIF in OrbStack and opens a PR automatically.
+- **Native CLI covers the whole browser-free pipeline.** The Go binary now mirrors `validate`,
+  `doctor`, `build`, `verify-gps`, `correlate` and `gpx-import` — each **byte-for-byte identical**
+  to its Deno script (UTF-16-aware padding, `[ lat, lon ]` flow-YAML), all diffed in CI. Only
+  the browser/network scripts stay Deno-only.
 - **Unit tests** (`deno task test`) — the shared great-circle/polyline maths (`scripts/lib/geo.mjs`,
   deduped from four scripts) and the schema compile/validate helpers, covered by `deno test`
   and gated in CI.
@@ -76,14 +81,12 @@ forward are welcome; grab one and open an issue to claim it.
   poster PNG" button that reuses the render path.
 - **Weather, wired in.** Let `build-trip` optionally call `fetch-weather` and populate
   `weather[]` from `stays[]` dates + coordinates automatically (same pattern as elevation).
-- **Round out the native CLIs.** The Go binary still lacks `verify-gps` (now in Zig) and neither
-  covers `gpx-import`/`correlate`; port the remaining pure scripts so a single native toolchain
-  matches the Deno pipeline end-to-end.
-- **Zig parity in the OrbStack CI.** `ci/orb-ci.sh check` already covers Go byte-parity; add a
-  step that builds the Zig binary and diffs `verify-gps` output against the Deno script too.
-- **Auto-commit the regenerated hero.** Wire `ci/orb-ci.sh gif` into a `workflow_dispatch` (or
-  a `[gif]`-tagged push) that opens a PR / pushes the refreshed `docs/hero-demo.gif` — the
-  render already runs in the container, so this is just plumbing + an image-layer cache.
+- **Single distributable native binary.** The Go CLI now covers the whole pure pipeline; ship a
+  `journey-atlas` release binary (goreleaser, per-arch) so contributors don't need Deno for the
+  browser-free commands at all.
+- **Fold `weather`/`elevation` into `build`.** Let `build-trip` optionally fetch + populate
+  `weather[]`/`elevation[]` from `stays[]` dates + coordinates (the last two scripts that can't
+  go native, since they need the network).
 - **Accessibility pass.** Keyboard-navigable map controls, focus states, alt text,
   reduced-motion, and a WCAG-AA contrast check across all four themes.
 

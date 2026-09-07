@@ -26,7 +26,7 @@ docker build -q -t "$IMAGE" ci/ >/dev/null
 run() { docker run --rm -v "$PWD":/work -w /work "$IMAGE" bash -lc "$1"; }
 
 check() {
-  echo "▸ check — lint · tests · build · Go byte-parity"
+  echo "▸ check — lint · tests · build · native byte-parity (Go + Zig)"
   run '
     set -euo pipefail
     deno install
@@ -34,17 +34,33 @@ check() {
     deno task test
     deno task build
     ( cd cli-go && go build -o journey-atlas . )
+    ( cd cli-zig && zig build )
+    GO=./cli-go/journey-atlas
+    ZIG=./cli-zig/zig-out/bin/journey-atlas-verify
     fail=0
+
+    # build parity: Go `build` must be byte-identical to the Deno build for every trip
     shopt -s nullglob
     for f in trips/*.yaml trips/*.json; do
       deno task build:trip "$f" >/dev/null
       cp src/lib/journey.json /tmp/n.json
-      ./cli-go/journey-atlas build --out /tmp/g.json "$f" >/dev/null
-      diff -q /tmp/n.json /tmp/g.json >/dev/null || { echo "✗ parity mismatch: $f"; fail=1; }
-      ./cli-go/journey-atlas validate "$f" >/dev/null
+      $GO build --out /tmp/g.json "$f" >/dev/null
+      diff -q /tmp/n.json /tmp/g.json >/dev/null || { echo "✗ build parity: $f"; fail=1; }
+      $GO validate "$f" >/dev/null
     done
-    deno task build:trip trips/adriatic-crossing.yaml >/dev/null   # restore default
-    [ "$fail" = 0 ] && echo "✓ check passed (lint, tests, static build, Go byte-parity)"
+    deno task build:trip trips/adriatic-crossing.yaml >/dev/null   # restore default journey.json
+
+    # native-CLI parity: verify-gps / correlate / gpx must match the Deno scripts byte-for-byte.
+    # (correlate exits 1 when a POI is NO-GPS, so guard the captures under `set -e`.)
+    d() { diff <(eval "$1") <(eval "$2") >/dev/null || { echo "✗ $3 parity"; fail=1; }; }
+    d "deno task verify-gps data/example-gps.csv 2>/dev/null" "$GO verify-gps data/example-gps.csv 2>/dev/null" "Go verify-gps"
+    d "$ZIG data/example-gps.csv 2>/dev/null"                 "$GO verify-gps data/example-gps.csv 2>/dev/null" "Zig verify-gps"
+    d "deno task correlate data/example-gps.csv data/example-track.gpx 2>/dev/null || true" \
+      "$GO correlate data/example-gps.csv data/example-track.gpx 2>/dev/null || true" "Go correlate"
+    d "deno task gpx data/example-track.gpx 2>/dev/null"        "$GO gpx data/example-track.gpx 2>/dev/null"        "Go gpx (YAML)"
+    d "deno task gpx data/example-track.gpx --json 2>/dev/null" "$GO gpx data/example-track.gpx --json 2>/dev/null" "Go gpx (JSON)"
+
+    [ "$fail" = 0 ] && echo "✓ check passed (lint, tests, static build, Go + Zig byte-parity)"
     exit "$fail"
   '
 }

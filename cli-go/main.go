@@ -44,6 +44,12 @@ func main() {
 		out := fs.String("out", "src/lib/journey.json", "output path for the compiled journey.json")
 		fs.Parse(rest)
 		os.Exit(runBuild(*schema, *out, fs.Args()))
+	case "verify-gps":
+		os.Exit(runVerifyGPS(rest))
+	case "correlate":
+		os.Exit(runCorrelate(rest))
+	case "gpx":
+		os.Exit(runGPXImport(rest))
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command %q\n\n", cmd)
 		usage()
@@ -55,14 +61,19 @@ func usage() {
 	fmt.Fprint(os.Stderr, `journey-atlas `+version+`
 
 usage:
-  journey-atlas validate <trip...>   schema-validate each trip (YAML or JSON)
-  journey-atlas doctor   <trip...>   plausibility lint (ranges, canvas, ferries…)
-  journey-atlas build    <trip>      validate + compile to src/lib/journey.json
-  journey-atlas version              print version
+  journey-atlas validate <trip...>          schema-validate each trip (YAML or JSON)
+  journey-atlas doctor   <trip...>          plausibility lint (ranges, canvas, ferries…)
+  journey-atlas build    <trip>             validate + compile to src/lib/journey.json
+  journey-atlas verify-gps <track.csv> [okKm]   check stays/POIs vs a GPS track
+  journey-atlas correlate [flags] <track...>    nearest POI across GPX/KML/CSV tracks
+  journey-atlas gpx <track.gpx|kml> [flags]     recorded track → drives[] fragment
+  journey-atlas version                     print version
 
 flags (before the file, per subcommand):
-  validate --schema <path>          JSON Schema (default schema/journey.schema.json)
-  build    --schema <path> --out <path>   default out: src/lib/journey.json
+  validate  --schema <path>         JSON Schema (default schema/journey.schema.json)
+  build     --schema <path> --out <path>   default out: src/lib/journey.json
+  correlate --trip <file> --km <n> --stays --json
+  gpx       --cls <motorway|a|b|minor> --tol <metres> --json
 `)
 }
 

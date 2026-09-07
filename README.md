@@ -282,16 +282,21 @@ script it mirrors, and each is a standalone companion (no Deno/Node required to 
 
 | Dir | Language | Commands | Mirrors |
 |---|---|---|---|
-| [`cli-go/`](cli-go/) | **Go 1.24** | `validate` · `doctor` · `build` | `build-trip.mjs` · `trip-doctor.mjs` |
+| [`cli-go/`](cli-go/) | **Go 1.24** | `validate` · `doctor` · `build` · `verify-gps` · `correlate` · `gpx` | every pure script |
 | [`cli-zig/`](cli-zig/) | **Zig 0.16** | `verify-gps` | `verify-gps.mjs` |
 
+The **Go CLI now covers the whole browser-free pipeline** — including `verify-gps`,
+`correlate` and `gpx-import` — each byte-for-byte identical to its Deno script (UTF-16-aware
+column padding; `gpx`'s YAML reproduces the `[ lat, lon ]` flow pairs exactly). The OrbStack
+CI diffs all of them, plus the Zig `verify-gps`.
+
 ```bash
-cd cli-go  && go build -o journey-atlas . && ./journey-atlas doctor ../trips/*.yaml
+cd cli-go  && go build -o journey-atlas . && ./journey-atlas correlate ../data/example-gps.csv ../data/example-track.gpx
 cd cli-zig && zig build && ./zig-out/bin/journey-atlas-verify ../data/example-gps.csv
 ```
 
-Anything that needs a browser or the network — `render`/`render:all` (Playwright),
-`weather`/`elevation` (HTTP), `gpx` (XML) — stays in Deno.
+Only what genuinely needs a browser or the network stays Deno-only: `render`/`render:all`
+(Playwright) and `weather`/`elevation` (HTTP).
 
 ## CI/CD — self-hosted on a Mac mini (OrbStack)
 
