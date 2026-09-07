@@ -26,8 +26,8 @@
   <img alt="Made with" src="https://img.shields.io/badge/made%20with-☕%20%2B%20🗺️-fef3c7">
 </p>
 
-<p align="center"><img src="docs/hero-demo.gif" alt="Creating a trip: write it in YAML, validate, build, render — then the finished map" width="100%"></p>
-<p align="center"><sub>Above: the whole workflow — write your trip in plain <b>YAML</b>, then <code>doctor</code> → <code>build:trip</code> → <code>render</code> turns it into a print-ready map. Regenerate this demo with <code>node scripts/make-demo-gif.mjs</code>.</sub></p>
+<p align="center"><img src="docs/hero-demo.gif" alt="Creating a trip: write YAML, validate, verify against GPS with a native Zig binary, render — then the finished satellite map" width="100%"></p>
+<p align="center"><sub>Above: the whole workflow — write your trip in plain <b>YAML</b>, then <code>doctor</code> → <code>build:trip</code> → a native <b>Zig</b> GPS check → <code>render</code> turns it into a print-ready map (here on Esri <b>satellite</b>). Regenerate with <code>node scripts/make-demo-gif.mjs</code>.</sub></p>
 
 ---
 
@@ -244,6 +244,25 @@ npm run gpx -- track.kml --tol 120 --json           # coarser, as JSON
 GPX carries no road class, so the whole leg gets one `--cls` (default `minor`) — split it into
 `segs` by hand where the road actually changes. Paste the fragment into your trip, then
 `npm run doctor` and `npm run build:trip`.
+
+## Native CLIs
+
+The browser-free parts of the pipeline also ship as **zero-dependency native binaries** — handy
+for CI, editor hooks, or a single distributable. Each is **byte-for-byte identical** to the Node
+script it mirrors, and each is a standalone companion (no npm/Node required to build or run it).
+
+| Dir | Language | Commands | Mirrors |
+|---|---|---|---|
+| [`cli-go/`](cli-go/) | **Go** | `validate` · `doctor` · `build` | `build-trip.mjs` · `trip-doctor.mjs` |
+| [`cli-zig/`](cli-zig/) | **Zig 0.16** | `verify-gps` | `verify-gps.mjs` |
+
+```bash
+cd cli-go  && go build -o journey-atlas . && ./journey-atlas doctor ../trips/*.yaml
+cd cli-zig && zig build && ./zig-out/bin/journey-atlas-verify ../data/example-gps.csv
+```
+
+Anything that needs a browser or the network — `render`/`render:all` (Playwright),
+`weather`/`elevation` (HTTP), `gpx` (XML) — stays in Node.
 
 ## Basemaps
 
