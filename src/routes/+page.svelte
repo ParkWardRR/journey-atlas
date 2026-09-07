@@ -73,18 +73,18 @@
     </div>
     {/if}
 
-    <!-- distance + road-class legend -->
+    <!-- distance + road-class legend — wide, two columns -->
     <div class="overlay legend-card">
       <div class="legtitle">Total distance <b>{data.totalMiles.toLocaleString()}</b></div>
-      <table class="roads"><tbody>
+      <div class="roads-grid">
         {#each data.roadStats as r}
-          <tr>
-            <td><span class="rl {r.cls}" style="background:{pal[r.cls]}"></span></td>
-            <td class="rlbl">{r.label}</td>
-            <td class="rmi">{r.mi} mi</td>
-          </tr>
+          <div class="rrow">
+            <span class="rl {r.cls}" style="background:{pal[r.cls]}"></span>
+            <span class="rlbl">{r.label}</span>
+            <span class="rmi">{r.mi} mi</span>
+          </div>
         {/each}
-      </tbody></table>
+      </div>
     </div>
 
     <!-- tiny map credit -->
@@ -128,19 +128,19 @@
   .fv i { display: block; font-style: normal; font-size: 11px; font-weight: 500; color: #9a917f; }
   .ft { font-size: 14px; font-weight: 700; color: #c94a24; text-align: right; white-space: nowrap; }
 
-  .legend-card { bottom: 40px; left: 40px; padding: 18px 22px; }
-  .legtitle { font-size: 17px; font-weight: 600; color: #3a382f; padding-bottom: 9px; margin-bottom: 7px; border-bottom: 1px solid #ece7dd; }
+  .legend-card { bottom: 40px; left: 40px; padding: 14px 24px 15px; }
+  .legtitle { font-size: 17px; font-weight: 600; color: #3a382f; padding-bottom: 8px; margin-bottom: 9px; border-bottom: 1px solid #ece7dd; }
   .legtitle b { font-size: 22px; font-weight: 800; color: #2a2722; }
   .legtitle b::after { content: ' mi'; font-size: 13px; font-weight: 600; color: #857c6c; }
-  .roads { border-collapse: collapse; }
-  .roads td { padding: 4px 0; vertical-align: middle; }
-  .rl { display: block; width: 30px; border-radius: 4px; }
+  .roads-grid { display: grid; grid-template-columns: auto auto; gap: 8px 36px; }
+  .rrow { display: flex; align-items: center; gap: 11px; }
+  .rl { display: block; width: 30px; border-radius: 4px; flex: none; }
   .rl.motorway { height: 9px; }
   .rl.a { height: 6px; }
   .rl.b { height: 4px; }
   .rl.minor { height: 2.5px; }
-  .rlbl { font-size: 15px; font-weight: 600; color: #4a473e; padding: 0 20px 0 12px; }
-  .rmi { font-size: 15px; font-weight: 700; color: #2a2722; text-align: right; padding-right: 18px; }
+  .rlbl { font-size: 15px; font-weight: 600; color: #4a473e; }
+  .rmi { font-size: 15px; font-weight: 700; color: #2a2722; margin-left: auto; padding-left: 16px; white-space: nowrap; }
 
   .map-credit {
     position: absolute; z-index: 500; left: 44px; bottom: 14px;

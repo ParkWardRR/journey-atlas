@@ -91,7 +91,20 @@
         "properties": {
           "name": { "type": "string" },
           "lat": { "type": "number" },
-          "lon": { "type": "number" }
+          "lon": { "type": "number" },
+          "kind": { "type": "string", "description": "Optional category key defined in poiKinds — gives this POI a distinct coloured/emoji marker instead of the plain dot" }
+        }
+      }
+    },
+
+    "poiKinds": {
+      "type": "object",
+      "description": "Optional POI categories. Each key is referenced by pois[].kind; the value styles its marker.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "color": { "type": "string", "description": "CSS colour of the marker" },
+          "emoji": { "type": "string", "description": "Emoji shown inside the marker" }
         }
       }
     },

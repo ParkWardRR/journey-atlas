@@ -137,7 +137,12 @@
     for (const { p } of ferryPix) obstacles.push({ x: p.x - 18, y: p.y - 13, w: 36, h: 26 });
     const stayPix = data.stays.map((s, i) => ({ s, i, p: pt(s.lat, s.lon) }));
     for (const { p } of stayPix) obstacles.push({ x: p.x - 15, y: p.y - 15, w: 30, h: 30 });
-    const poiPix = data.pois.map((s) => ({ s, p: pt(s.lat, s.lon) }));
+    // optional POI categories: data.poiKinds[kind] = { color, emoji } → distinct marker
+    const KINDS = data.poiKinds || {};
+    const kindDot = (k, cls) => `<div class="${cls}" style="background:${(KINDS[k] || {}).color || '#8a5a8f'}">${(KINDS[k] || {}).emoji || ''}</div>`;
+    // a POI shown inside a blow-up bubble is NOT drawn again on the main map (declutter)
+    const inBubble = (s) => INSETS.some((ins) => dkm([s.lat, s.lon], ins.center) < ins.poiKm);
+    const poiPix = data.pois.filter((s) => !inBubble(s)).map((s) => ({ s, p: pt(s.lat, s.lon) }));
     for (const { p } of poiPix) obstacles.push({ x: p.x - 9, y: p.y - 9, w: 18, h: 18 });
 
     for (const { f } of ferryPix) {
@@ -153,15 +158,17 @@
         icon: L.divIcon({ className: '', iconSize: [30, 30], iconAnchor: [15, 15],
           html: `<div class="stay-pin">${i + 1}<span class="hotel-badge">${BED}</span></div><div class="pin-label town ${ra}" style="left:${dx}px;top:${dy}px"><b>${s.area}</b></div>` }) }).addTo(map);
     }
-    // POIs: dot ALWAYS shown; label only when it fits (no overlap, no clutter)
+    // POIs: dot ALWAYS shown; label only when it fits (no overlap, no clutter).
+    // A POI with a `kind` gets its category marker instead of the plain dot.
     for (const { s, p } of poiPix) {
+      const k = s.kind && KINDS[s.kind];
       const w = s.name.length * 7.1 + 6, h = 22;
-      const r = place(p.x, p.y, w, h, 13);
-      let html = `<div class="poi-dot"></div>`;
+      const r = place(p.x, p.y, w, h, k ? 15 : 13);
+      let html = k ? kindDot(s.kind, 'kind-dot') : `<div class="poi-dot"></div>`;
       if (r) { obstacles.push(r); const dx = r.x - (p.x - 8), dy = r.y - (p.y - 8), ra = r.x + r.w / 2 < p.x ? 'ra' : '';
         html += `<div class="poi-label ${ra}" style="left:${dx}px;top:${dy}px">${s.name}</div>`; }
-      L.marker([s.lat, s.lon], { interactive: false, zIndexOffset: 300,
-        icon: L.divIcon({ className: '', iconSize: [16, 16], iconAnchor: [8, 8], html }) }).addTo(map);
+      L.marker([s.lat, s.lon], { interactive: false, zIndexOffset: k ? 320 : 300,
+        icon: L.divIcon({ className: '', iconSize: k ? [22, 22] : [16, 16], iconAnchor: k ? [11, 11] : [8, 8], html }) }).addTo(map);
     }
 
     // ---------- enlarged blow-up insets ----------
@@ -198,18 +205,26 @@
         // hotels (overnight bases) — bed icon
         for (const s of data.stays) L.marker([s.lat, s.lon], { interactive: false, zIndexOffset: 600,
           icon: L.divIcon({ className: '', iconSize: [24, 24], iconAnchor: [12, 12], html: `<div class="mini-hotel">${BED}</div>` }) }).addTo(im);
-        // orange sight POIs — numbered where they belong to this blow-up
-        const near = data.pois.filter((p) => dkm([p.lat, p.lon], ins.center) < ins.poiKm);
+        // sight POIs — numbered where they belong to this blow-up; category POIs get their marker
+        const near = data.pois.filter((p) => !p.kind && dkm([p.lat, p.lon], ins.center) < ins.poiKm);
         const numOf = new Map(near.map((p, i) => [p.name, i + 1]));
         for (const p of data.pois) {
+          if (p.kind && KINDS[p.kind]) {
+            L.marker([p.lat, p.lon], { interactive: false, zIndexOffset: 560,
+              icon: L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: kindDot(p.kind, 'mini-kind') }) }).addTo(im);
+            continue;
+          }
           const n = numOf.get(p.name);
           L.marker([p.lat, p.lon], { interactive: false, zIndexOffset: n ? 550 : 500,
             icon: L.divIcon({ className: '', iconSize: n ? [20, 20] : [12, 12], iconAnchor: n ? [10, 10] : [6, 6],
               html: n ? `<div class="mini-num">${n}</div>` : `<div class="mini-poi"></div>` }) }).addTo(im);
         }
 
-        // caption card: title + hotel(s) + numbered key of the orange POIs
+        // caption card: title + hotel(s) + numbered key of the sights + any category lines
         const hotelsNear = data.stays.filter((s) => s.hotel && dkm([s.lat, s.lon], ins.center) < ins.poiKm);
+        const kindsNear = {};
+        for (const p of data.pois)
+          if (p.kind && KINDS[p.kind] && dkm([p.lat, p.lon], ins.center) < ins.poiKm) (kindsNear[p.kind] ||= []).push(p.name);
         const vert = ins.capMode === 'vert';
         const panel = document.createElement('div');
         panel.className = vert ? 'bubble-cap vert' : 'bubble-cap';
@@ -219,7 +234,9 @@
         panel.innerHTML =
           `<div class="bubble-title">${ins.title}</div>` +
           (hotelsNear.length ? `<div class="bubble-hotels"><span class="bed">${BED}</span>${hotelsNear.map((s) => s.hotel).join(' &middot; ')}</div>` : '') +
-          (near.length ? `<div class="bubble-pois">${near.map((p, i) => `<span><i>${i + 1}</i>${p.name}</span>`).join('')}</div>` : '');
+          (near.length ? `<div class="bubble-pois">${near.map((p, i) => `<span><i>${i + 1}</i>${p.name}</span>`).join('')}</div>` : '') +
+          Object.entries(kindsNear).map(([k, names]) =>
+            `<div class="bubble-kind" style="color:${KINDS[k].color}"><span class="kg" style="background:${KINDS[k].color}">${KINDS[k].emoji}</span>${names.join(' &middot; ')}</div>`).join('');
         parent.appendChild(panel);
       }
     }
@@ -345,4 +362,10 @@
   :global(.mini-hotel svg) { width: 15px; height: 15px; fill: #fff; }
   :global(.mini-num) { width: 20px; height: 20px; border-radius: 50%; background: #e8a01e; color: #fff; border: 2.5px solid #fff; box-shadow: 0 1px 5px rgba(90,60,10,.45); font-size: 12px; font-weight: 800; line-height: 15px; text-align: center; }
   :global(.mini-poi) { width: 10px; height: 10px; border-radius: 50%; background: #e8a01e; border: 2.5px solid #fff; box-shadow: 0 1px 4px rgba(90,60,10,.4); }
+
+  /* optional POI categories (data.poiKinds) — coloured marker with an emoji */
+  :global(.kind-dot), :global(.mini-kind) { width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid #fff; box-shadow: 0 2px 6px rgba(40,40,40,.4); display: flex; align-items: center; justify-content: center; font-size: 12px; line-height: 1; }
+  :global(.bubble-kind) { margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif; font-size: 12.5px; font-weight: 700; }
+  :global(.bubble-cap.vert .bubble-kind) { justify-content: flex-start; }
+  :global(.bubble-kind .kg) { display: inline-flex; width: 17px; height: 17px; border-radius: 50%; align-items: center; justify-content: center; flex: none; font-size: 10px; }
 </style>
