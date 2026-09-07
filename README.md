@@ -39,8 +39,8 @@
 - 🛣️ the **driving route**, coloured and sized by road class (motorway → single-track)
 - ⛴️ **ferry crossings** as dashed sea-legs, numbered and listed in a table
 - 🛏️ **overnight stays** as numbered pins with a hotel badge (+ the hotel name in blow-ups)
-- 📍 **sights / POIs** that auto-label only where they fit (no clutter)
-- 🔍 **magnified blow-up insets** for fiddly island/city detail, with a numbered key
+- 📍 **sights / POIs** that auto-label only where they fit — with optional **categories** (give a set of POIs their own colour + emoji marker)
+- 🔍 **magnified blow-up insets** for fiddly island/city detail, with a numbered key; anything shown in a blow-up is **not repeated** on the main map (auto-declutter)
 - 🌦️ a **daily weather** table (fetch real history from [Open-Meteo](https://open-meteo.com/))
 - ✍️ an optional **hand-note callout** and an **"onward journey"** tag that arcs off the edge
 - 🧭 direction-of-travel chevrons, a distance legend, and a tiny basemap credit
@@ -163,7 +163,8 @@ inline docs** in VS Code (the example's `$schema` key wires it up automatically)
 | `title`, `subtitle` | headline + one-liner under it |
 | `totalMiles` | number shown in the distance legend |
 | `stays[]` | `{ area, hotel, lat, lon, dates }` — numbered pins, in trip order |
-| `pois[]` | `{ name, lat, lon }` — auto-labelled sights |
+| `pois[]` | `{ name, lat, lon, kind? }` — auto-labelled sights; `kind` references `poiKinds` |
+| `poiKinds` | optional categories: `{ swim: { color, emoji } }` — tagged POIs get that marker + a caption line |
 | `ferries[]` | `{ num, short, vessel, size, dur, a:[lat,lon], b:[lat,lon] }` |
 | `drives[]` | `{ label, segs:[{ cls, line:[[lat,lon]…] }] }` — `cls` ∈ `motorway \| a \| b \| minor` |
 | `roadStats[]` | `{ cls, label, mi }` legend rows |
@@ -284,6 +285,12 @@ Maps / Stamen Design). Weather from [Open-Meteo](https://open-meteo.com/). Built
 [SvelteKit](https://kit.svelte.dev/), [Leaflet](https://leafletjs.com/) and
 [Playwright](https://playwright.dev/). Respect each tile provider's usage policy for anything beyond
 personal renders.
+
+## Where this is going
+
+The bigger picture is a **files-in, map-out pipeline**: drop in geotagged photos, a GPX track and an
+itinerary spreadsheet, and get the finished website + posters with no manual coordinate work. The
+render half exists today; the input adapters are next — see **[ROADMAP.md](ROADMAP.md)**.
 
 ## License
 

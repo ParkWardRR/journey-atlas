@@ -9,55 +9,69 @@ forward are welcome; grab one and open an issue to claim it.
 
 ---
 
-## Where we are today ✅
+## Shipped ✅
 
+**Core pipeline**
 - **YAML/JSON → validated → poster PNG.** `build-trip.mjs` compiles a trip against
   [`schema/journey.schema.json`](schema/journey.schema.json) into `src/lib/journey.json`;
   `render.mjs` drives headless Chromium and screenshots the fixed 1600×1200 `#journey-card`.
 - **15 basemaps, 4 road palettes,** with graceful Stadia-key fallback to keyless look-alikes.
-- **Helper scripts:** `fetch-weather.mjs` (Open-Meteo archive), `verify-gps.mjs` (CSV track truth-check).
-- **11 starter trips** in [`trips/`](trips/), each rendered into the README gallery.
-- **Interactive `/trip` web UI + 4 themes + static build** — landing via PR #1 (Daylight ·
-  Night · Vintage · Minimal, persisted, system light/dark aware).
+- **Native Go CLI** ([`cli-go/`](cli-go/)) — `validate`, `doctor`, and `build`, the last
+  **byte-for-byte identical** to `build-trip.mjs`. A browser-free companion for the pure commands.
+
+**Rendering & authoring tooling**
+- **Multi-trip render, no collisions** — `npm run render:all` builds + renders every `trips/*.yaml`
+  to `output/samples/` with per-trip names; single `render` now **starts/stops Vite itself**
+  (no second terminal) and takes `--out`.
+- **Trip-doctor** (`npm run doctor`) — plausibility lint beyond schema: coordinate ranges,
+  likely-swapped lat/lon, `totalMiles` vs summed `roadStats`, drive classes vs legend,
+  degenerate ferries, insets off the 1600×1200 canvas.
+- **CI on every PR** — schema-validate every trip, run the doctor, build the static site, and
+  build the Go CLI + diff its `build` output against Node.
+
+**Map features**
+- **POI categories** (`poiKinds` + `pois[].kind`) — tagged sights get a coloured/emoji marker
+  and a caption line.
+- **Auto-declutter** — a POI shown inside a blow-up inset is not redrawn on the main map.
+- **Wide two-column distance legend.**
+- **Elevation profiles** — `fetch-elevation.mjs` (keyless Open-Meteo) → `elevation[]`; an
+  interactive area chart (peak, climb, crosshair tooltip) on `/trip`.
+
+**Import & data helpers**
+- **GPX / KML import** (`npm run gpx`) — a recorded track → paste-ready `drives[]` fragment.
+- **Real weather** (`fetch-weather.mjs`) and **GPS truth-check** (`verify-gps.mjs`).
+
+**Web experience**
+- **Interactive `/trip`** — big Leaflet map, itinerary, sights, ferries, weather grid, road
+  breakdown, elevation chart.
+- **`/gallery`** — a themed card grid of every trip with rendered thumbnails.
+- **Four curated themes** (Daylight · Night · Vintage · Minimal), persisted, system-aware,
+  **no theme flash** (pre-paint), with keyless-Stadia labelling in the basemap picker.
+- **Static build** — `npm run build` prerenders `/`, `/trip` and `/gallery` via `adapter-static`.
 
 ---
 
-## Near-term 🔭 — remove the sharp edges
+## Near-term 🔭 — natural next steps
 
-These target friction that exists *right now* in the pipeline.
-
-- **Multi-trip build & render, no collisions.** Today `build-trip.mjs` always writes the one
-  `src/lib/journey.json` and `render.mjs` always writes `output/journey-<style>.png`, so
-  rendering the whole `trips/` folder means a manual build→render→rename loop (we hit exactly
-  this producing the README gallery). Add `render.mjs --trip <file> --out <name>` and a
-  `render:all` that walks `trips/*.yaml` and names outputs per-trip automatically.
-- **One-command render.** `render.mjs` requires the dev server already running in another
-  terminal. Have it spawn/`await` a `vite preview` (or a static server on `build/`) itself, so
-  `npm run render` works from a clean checkout with no second terminal.
-- **CI on every PR.** There is no `.github/` yet. Add a GitHub Action that (a) validates every
-  `trips/*.yaml` against the schema, (b) runs `npm run build`, and (c) optionally renders one
-  trip headless as a smoke test. Fail the PR on a bad coordinate or schema drift.
-- **A schema-lint / trip-doctor script.** Beyond raw JSON-Schema validation, warn on
-  *plausible-but-wrong* data: stays/POIs in the sea, ferry endpoints on land, `totalMiles`
-  far from the summed `roadStats`, insets whose pixel circle falls off the 1600×1200 canvas.
-- **Multi-trip gallery / index page.** Build every file in `trips/` into a static index that
-  lists all journeys with thumbnails, linking to each `/trip` page.
+- **Elevation on the poster too.** The profile is `/trip`-only today; add it to the 1600×1200
+  poster (a corner sparkline or a slim strip under the legend).
+- **Deep-linkable + exportable web UI.** `?theme=&style=&roads=` URL state and a "Download
+  poster PNG" button that reuses the render path.
+- **Weather, wired in.** Let `build-trip` optionally call `fetch-weather` and populate
+  `weather[]` from `stays[]` dates + coordinates automatically (same pattern as elevation).
+- **Finish the Go CLI.** Port `gpx-import` and `fetch-elevation` so the native binary matches
+  the Node scripts end-to-end.
+- **Accessibility pass.** Keyboard-navigable map controls, focus states, alt text,
+  reduced-motion, and a WCAG-AA contrast check across all four themes.
 
 ## Mid-term 🔭 — less hand-authoring
 
-The biggest authoring cost is hand-typing `drives[].segs[].line[]` coordinate lists.
+The biggest remaining authoring cost is hand-typing `drives[].segs[].line[]` coordinate lists.
 
-- **GPX / KML import.** `verify-gps.mjs` already reads a CSV track; extend the family to turn a
-  recorded GPX/KML directly into `drives[]` (with `verify-gps` confirming stays/POIs were real).
 - **Auto-routing + road classification.** Optional script to snap stop-to-stop legs to real
   roads and infer `cls` (motorway/a/b/minor) instead of drawing polylines by hand.
-- **Weather, wired in.** `fetch-weather.mjs` prints a paste-ready array today; let `build-trip`
-  optionally call it and populate `weather[]` from `stays[]` dates + coordinates automatically.
-- **Deep-linkable + exportable web UI.** `?theme=&style=&roads=` URL state and a "Download
-  poster PNG" button that reuses the existing render path.
-- **Accessibility pass.** Keyboard-navigable map controls, focus states, alt text,
-  reduced-motion, and a WCAG-AA contrast check across all four themes.
 - **Units & i18n.** mi/km and °C/°F toggles; localizable UI strings.
+- **Elevation-aware extras.** Per-leg climb/descent, steepest-grade callouts.
 
 ## Long-term 💡 — bigger bets
 
@@ -67,7 +81,6 @@ The biggest authoring cost is hand-typing `drives[].segs[].line[]` coordinate li
   beyond the single poster.
 - **Geotagged-photo integration.** Drop photos on the map; auto-place as POIs from EXIF GPS.
 - **Pluggable basemaps.** A tile-provider registry so a new basemap is config, not a code edit.
-- **Elevation profile** section under the map for drives with elevation data.
 
 ---
 

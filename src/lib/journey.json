@@ -52,7 +52,8 @@
     {
       "name": "Polignano a Mare",
       "lat": 40.996,
-      "lon": 17.22
+      "lon": 17.22,
+      "kind": "swim"
     },
     {
       "name": "Krujë Castle",
@@ -72,7 +73,8 @@
     {
       "name": "Sv. Naum",
       "lat": 40.914,
-      "lon": 20.742
+      "lon": 20.742,
+      "kind": "swim"
     },
     {
       "name": "Matka Canyon",
@@ -85,6 +87,12 @@
       "lon": 23.34
     }
   ],
+  "poiKinds": {
+    "swim": {
+      "color": "#0891b2",
+      "emoji": "🏊"
+    }
+  },
   "ferries": [
     {
       "num": 1,
