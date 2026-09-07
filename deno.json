@@ -11,6 +11,7 @@
 
     "doctor": "deno run --allow-env --allow-read scripts/trip-doctor.mjs",
     "verify-gps": "deno run --allow-read scripts/verify-gps.mjs",
+    "correlate": "deno run --allow-env --allow-read scripts/correlate-poi.mjs",
     "gpx": "deno run --allow-env --allow-read scripts/gpx-import.mjs",
 
     "weather": "deno run --allow-read --allow-net=archive-api.open-meteo.com scripts/fetch-weather.mjs",

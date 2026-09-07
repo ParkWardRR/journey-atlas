@@ -47,6 +47,10 @@ forward are welcome; grab one and open an issue to claim it.
 **Import & data helpers**
 - **GPX / KML import** (`deno task gpx`) — a recorded track → paste-ready `drives[]` fragment.
 - **Real weather** (`fetch-weather.mjs`) and **GPS truth-check** (`verify-gps.mjs`).
+- **POI correlation** (`deno task correlate`) — pool a corpus of GPX/KML/CSV tracks and
+  find the nearest recorded point for every POI (which file, distance, OK/~near/NO-GPS),
+  with a per-file breakdown. Shares the track readers with `verify-gps`/`gpx-import`
+  (`scripts/lib/tracks.mjs`) and is covered by `deno test`.
 
 **Web experience**
 - **Interactive `/trip`** — big Leaflet map, itinerary, sights, ferries, weather grid, road

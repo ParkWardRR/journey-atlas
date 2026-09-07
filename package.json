@@ -28,6 +28,7 @@
     "weather": "deno task weather",
     "elevation": "deno task elevation",
     "verify-gps": "deno task verify-gps",
+    "correlate": "deno task correlate",
     "check": "deno task check",
     "fmt": "deno task fmt",
     "lint": "deno task lint"

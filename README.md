@@ -244,6 +244,23 @@ deno task verify-gps data/example-gps.csv
 
 The CSV just needs `latitude` and `longitude` columns.
 
+**POI correlation** — the many-files companion to the truth-check: point it at a whole
+folder of tracks (any mix of GPX, KML and CSV), and for **each POI** it reports the
+nearest recorded point across *all* of them — how far, which file, and an OK/~near/NO-GPS
+verdict — plus a per-file breakdown of which tracks each POI correlates to. Exits non-zero
+if any POI is unbacked, so it drops into CI:
+
+```bash
+deno task correlate data/*.gpx data/*.csv
+# poi  Ohrid Old Town               0.07 km   OK      example-gps.csv
+# poi  Rila Monastery              62.76 km   NO-GPS  example-gps.csv
+deno task correlate --trip trips/adriatic-crossing.yaml --stays --km 2 tracks/*.csv
+deno task correlate --json data/*.gpx        # machine-readable rows
+```
+
+Track waypoints count as recorded positions too. Defaults to the compiled
+`src/lib/journey.json`; `--trip <file>` correlates a trip's POIs directly.
+
 **GPX / KML import** — turn a recorded track into a paste-ready `drives[]` fragment instead of
 hand-typing coordinate polylines. The track is simplified (Douglas–Peucker) to a sane number of
 points, the length becomes `totalMiles`, and any waypoints become `pois[]`:

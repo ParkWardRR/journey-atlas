@@ -10,6 +10,7 @@
 
 import { readFileSync } from 'node:fs';
 import { haversineKm as km } from './lib/geo.mjs';
+import { parseCsv, verdict } from './lib/tracks.mjs';
 
 const csvFile = process.argv[2];
 const OKKM = Number(process.argv[3] || 3);
@@ -17,27 +18,12 @@ if (!csvFile) { console.error('usage: deno task verify-gps <track.csv> [okKm]');
 
 const data = JSON.parse(readFileSync(new URL('../src/lib/journey.json', import.meta.url), 'utf8'));
 
-function parseCsv(txt) {
-  const lines = txt.trim().split(/\r?\n/);
-  const head = lines[0].split(',').map((h) => h.trim().toLowerCase());
-  const la = head.indexOf('latitude'), lo = head.indexOf('longitude');
-  if (la < 0 || lo < 0) throw new Error('CSV needs `latitude` and `longitude` columns');
-  const pts = [];
-  for (let i = 1; i < lines.length; i++) {
-    const c = lines[i].split(',');
-    const lat = parseFloat(c[la]), lon = parseFloat(c[lo]);
-    if (!Number.isNaN(lat) && !Number.isNaN(lon)) pts.push([lat, lon]);
-  }
-  return pts;
-}
-
 const track = parseCsv(readFileSync(csvFile, 'utf8'));
 const nearest = (p) => track.reduce((m, g) => Math.min(m, km(p, g)), Infinity);
-const verdict = (d) => (d <= OKKM ? 'OK' : d <= OKKM * 2.5 ? '~near' : 'NO-GPS');
 
 const check = (label, name, lat, lon) => {
   const d = nearest([lat, lon]);
-  console.log(`${label.padEnd(6)} ${name.padEnd(24)} ${d.toFixed(2).padStart(7)} km   ${verdict(d)}`);
+  console.log(`${label.padEnd(6)} ${name.padEnd(24)} ${d.toFixed(2).padStart(7)} km   ${verdict(d, OKKM)}`);
 };
 
 console.log(`Track: ${csvFile} (${track.length} points)   OK threshold: ${OKKM} km\n`);

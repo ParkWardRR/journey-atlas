@@ -11,9 +11,9 @@
 // default "minor"); split it into segs by hand where the road actually changes.
 // Track waypoints (GPX <wpt>, KML Point Placemarks) become `pois[]`.
 
-import { readFileSync } from 'node:fs';
 import { Document, visit, isScalar } from 'yaml';
 import { haversineMeters, simplify } from './lib/geo.mjs';
+import { readTrack } from './lib/tracks.mjs';
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith('--'));
@@ -34,56 +34,11 @@ if (!['motorway', 'a', 'b', 'minor'].includes(cls)) {
   process.exit(1);
 }
 
-const xml = readFileSync(file, 'utf8');
-const isKml = file.toLowerCase().endsWith('.kml') || /<kml[\s>]/.test(xml);
+const round6 = (n) => Math.round(n * 1e6) / 1e6;
 
 // ---- parse ----------------------------------------------------------------
 
-const attr = (tag, name) => {
-  const m = tag.match(new RegExp(`${name}\\s*=\\s*"([^"]+)"`));
-  return m ? parseFloat(m[1]) : NaN;
-};
-const round6 = (n) => Math.round(n * 1e6) / 1e6;
-
-function parseGpx(x) {
-  const track = [];
-  // <trkpt ...> and <rtept ...> opening tags, attribute order-independent
-  for (const m of x.matchAll(/<(?:trkpt|rtept)\b([^>]*)>/g)) {
-    const lat = attr(m[1], 'lat'), lon = attr(m[1], 'lon');
-    if (Number.isFinite(lat) && Number.isFinite(lon)) track.push([lat, lon]);
-  }
-  const pois = [];
-  for (const m of x.matchAll(/<wpt\b([^>]*)>([\s\S]*?)<\/wpt>/g)) {
-    const lat = attr(m[1], 'lat'), lon = attr(m[1], 'lon');
-    const name = (m[2].match(/<name>([\s\S]*?)<\/name>/) || [])[1];
-    if (Number.isFinite(lat) && Number.isFinite(lon)) pois.push({ name: (name || 'Waypoint').trim(), lat, lon });
-  }
-  return { track, pois };
-}
-
-function parseKml(x) {
-  const track = [];
-  const line = x.match(/<LineString>[\s\S]*?<coordinates>([\s\S]*?)<\/coordinates>[\s\S]*?<\/LineString>/i);
-  if (line) {
-    for (const tok of line[1].trim().split(/\s+/)) {
-      const [lon, lat] = tok.split(',').map(Number); // KML is lon,lat[,alt]
-      if (Number.isFinite(lat) && Number.isFinite(lon)) track.push([lat, lon]);
-    }
-  }
-  const pois = [];
-  for (const m of x.matchAll(/<Placemark>([\s\S]*?)<\/Placemark>/g)) {
-    const body = m[1];
-    if (!/<Point>/.test(body)) continue;
-    const name = (body.match(/<name>([\s\S]*?)<\/name>/) || [])[1];
-    const c = (body.match(/<Point>[\s\S]*?<coordinates>([\s\S]*?)<\/coordinates>/) || [])[1];
-    if (!c) continue;
-    const [lon, lat] = c.trim().split(/\s+/)[0].split(',').map(Number);
-    if (Number.isFinite(lat) && Number.isFinite(lon)) pois.push({ name: (name || 'Waypoint').trim(), lat, lon });
-  }
-  return { track, pois };
-}
-
-const { track, pois } = isKml ? parseKml(xml) : parseGpx(xml);
+const { track, pois } = readTrack(file);
 if (track.length < 2) {
   console.error(`✗ no usable track found in ${file} (need at least 2 points; found ${track.length})`);
   process.exit(1);
